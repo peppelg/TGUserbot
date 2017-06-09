@@ -3,7 +3,7 @@
 if(isset($argv[1]) and $argv[1] == "background") {
   shell_exec("screen php start.php startb");
   system("clear");
-  echo "\n Avviato in background usando screen. \n";
+  echo "\n TGUserbot avviato in background usando screen. \n";
   exit;
 }
 if(isset($argv[1]) and $argv[1] == "startb") {
