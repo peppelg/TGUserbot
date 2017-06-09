@@ -1,0 +1,48 @@
+{
+    "name": "danog/madelineproto",
+    "description": "PHP implementation of telegram's MTProto protocol.",
+    "type": "project",
+    "license": "AGPL-3.0",
+    "homepage": "https://daniil.it/MadelineProto",
+    "keywords": ["telegram", "mtproto", "protocol", "bytes", "messenger", "client", "PHP", "video", "stickers", "audio", "files", "GB"],
+    "conflict": {
+        "krakjoe/pthreads-polyfill": "*"
+    },
+    "require": {
+        "php": ">=5.6.0",
+        "danog/primemodule": "dev-master",
+        "danog/magicalserializer": "dev-master",
+        "phpseclib/phpseclib": "dev-master#200c2a9",
+        "vlucas/phpdotenv": "^2.4",
+        "erusev/parsedown": "^1.6",
+        "rollbar/rollbar": "dev-master",
+        "ext-mbstring": "*",
+        "ext-curl": "*",
+        "ext-sockets": "*",
+        "ext-xml": "*"
+
+    },
+    "require-dev": {
+        "phpdocumentor/reflection-docblock": "^3.1"
+    },
+    "authors": [
+        {
+            "name": "Daniil Gentili",
+            "email": "daniil@daniil.it"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "danog\\MadelineProto\\": "src/"
+        },
+        "files": [
+            "src/Socket.php",
+			"src/Collectable.php",
+			"src/Threaded.php",
+			"src/Volatile.php",
+			"src/Thread.php",
+			"src/Worker.php",
+			"src/Pool.php"
+        ]
+    }
+}
