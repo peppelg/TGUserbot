@@ -102,7 +102,7 @@ while (true) {
         if(isset($update['update']['message']['id'])) $msgid = $update['update']['message']['id'];
         if(isset($msg)) {
           echo "Messaggio: $msg, uid: $userID, chatid: $chatID, tipo: $type \n";
-          @leggimsg($chatID, $msgid);
+          if(isset($type) and isset($msgid) and $type == "privata") leggimsg($chatID, $msgid);
           @include("bot.php");
         }
         //Pulizia
