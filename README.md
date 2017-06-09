@@ -2,7 +2,6 @@
 
 Installazione
 -------------
-	sudo apt-get install -y composer php7.0 php7.0-common php7.0-mbstring php7.0-xml php7.0-bcmath php7.0-mcrypt php7.0-curl php7.0-gmp php7.0-libsodium
 	sudo apt-get install -y composer php php-common php-mbstring php-xml php-bcmath php-mcrypt php-curl php-gmp php-libsodium
 	git clone https://github.com/peppelg/TGUserbot
 	cd TGUserbot
