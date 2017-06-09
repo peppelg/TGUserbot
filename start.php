@@ -11,7 +11,7 @@ if(isset($argv[1]) and $argv[1] == "startb") {
 }
 require 'vendor/autoload.php';
 if (file_exists('.env')) {
-    echo 'Caricando impostazioni.env...'.PHP_EOL;
+    echo 'Caricando .env...'.PHP_EOL;
     $dotenv = new Dotenv\Dotenv(getcwd());
     $dotenv->load();
 }
