@@ -6,8 +6,11 @@ if(isset($argv[1]) and $argv[1] == "background") {
   exit;
 }
 if(isset($argv[1]) and $argv[1] == "update") {
+  $bot = file_get_contents("bot.php"); //salvo bot.php
+  shell_exec("git reset --hard HEAD");
   shell_exec("git pull");
   shell_exec("composer update");
+  file_put_contents("bot.php", $bot); //ripristino bot.php
   echo "\n Fatto! \n";
   exit;
 }
