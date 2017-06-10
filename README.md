@@ -5,7 +5,7 @@ Installazione
 	sudo apt-get install -y composer php php-common php-mbstring php-xml php-bcmath php-mcrypt php-curl php-gmp php-libsodium
 	git clone https://github.com/peppelg/TGUserbot
 	cd TGUserbot
-	composer update 
+	composer update
 
 
 Configurazione
@@ -21,6 +21,11 @@ Avvio
 Avvio in background:
 
 	php start.php background
+
+
+Aggiornare la base
+------------------
+	php start.php update
 
 
 Supporto
