@@ -1,13 +1,22 @@
 #!/usr/bin/env php
 <?php
 if(isset($argv[1]) and $argv[1] == "background") {
-  shell_exec("screen php start.php startb");
-  system("clear");
+  shell_exec("screen -d -m php start.php");
   echo "\n TGUserbot avviato in background usando screen. \n";
   exit;
 }
-if(isset($argv[1]) and $argv[1] == "startb") {
-  shell_exec("screen -d");
+if(isset($argv[1]) and $argv[1] == "update") {
+  shell_exec("git pull");
+  shell_exec("composer update");
+  echo "\n Fatto! \n";
+  exit;
+}
+$riavviocrash = 1;
+if($riavviocrash) {
+  register_shutdown_function(function () {
+    echo "\n Riavvio... \n";
+    pcntl_exec($_SERVER['_'], array("start.php", 0));
+  });
 }
 require 'vendor/autoload.php';
 if (file_exists('.env')) {
@@ -101,16 +110,15 @@ while (true) {
         }
         if(isset($update['update']['message']['id'])) $msgid = $update['update']['message']['id'];
         if(isset($msg)) {
-          echo "Messaggio: $msg, uid: $userID, chatid: $chatID, tipo: $type \n";
-          if(isset($type) and isset($msgid) and $type == "privata") leggimsg($chatID, $msgid);
+          if(isset($type) and isset($msgid) and isset($chatID) and $type == "privata") leggimsg($chatID, $msgid);
           @include("bot.php");
         }
         //Pulizia
-        unset($msg);
-        unset($chatID);
-        unset($userID);
-        unset($type);
-        unset($msgid);
+        if(isset($msg)) unset($msg);
+        if(isset($chatID)) unset($chatID);
+        if(isset($userID)) unset($userID);
+        if(isset($type)) unset($type);
+        if(isset($msgid)) unset($msgid);
     }
     $serialize = 'Wrote '.\danog\MadelineProto\Serialization::serialize('bot.madeline', $MadelineProto).' bytes'.PHP_EOL;
 }
