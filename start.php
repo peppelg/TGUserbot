@@ -8,6 +8,7 @@ if(isset($argv[1]) and $argv[1] == "background") {
 if(isset($argv[1]) and $argv[1] == "update") {
   $bot = file_get_contents("bot.php");
   $env = file_get_contents(".env");
+  shell_exec("rm -rf vendor");
   shell_exec("git reset --hard HEAD");
   shell_exec("git pull");
   shell_exec("composer update");
