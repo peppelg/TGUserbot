@@ -102,12 +102,12 @@ while (true) {
         if(isset($update['update']['message']['message'])) $msg = $update["update"]["message"]["message"];
         if(isset($update['update']['message']['to_id']['channel_id'])) {
           $chatID = $update['update']['message']['to_id']['channel_id'];
-          $chatID = "channel#$chatID";
+          $chatID = '-100'.$chatID;
           $type = "supergruppo";
         }
         if(isset($update['update']['message']['to_id']['chat_id'])) {
           $chatID = $update['update']['message']['to_id']['chat_id'];
-          $chatID = "chat#$chatID";
+          $chatID = '-'.$chatID;
           $type = "gruppo";
         }
         if(isset($update['update']['message']['from_id'])) $userID = $update['update']['message']['from_id'];
