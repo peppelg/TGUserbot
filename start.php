@@ -67,8 +67,7 @@ if ($MadelineProto === false) {
             system("clear");
             $authorization = $MadelineProto->complete_signup(readline('Inserisci il nome: '), readline('Inserisci il cognome (per saltare premi invio): '));
         }
-        echo 'Serializing MadelineProto to session.madeline...'.PHP_EOL;
-        echo 'Wrote '.\danog\MadelineProto\Serialization::serialize('session.madeline', $MadelineProto).' bytes'.PHP_EOL;
+        echo 'Wrote '.\danog\MadelineProto\Serialization::serialize('bot.madeline', $MadelineProto).' bytes'.PHP_EOL;
         system("clear");
     } else {
         $MadelineProto->bot_login(getenv('BOT_TOKEN'));
