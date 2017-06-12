@@ -1,5 +1,7 @@
 #!/usr/bin/env php
 <?php
+ini_set("log_errors", 1);
+ini_set("error_log", "errori.log");
 if(isset($argv[1]) and $argv[1] == "background") {
   shell_exec("screen -d -m php start.php");
   echo "\n TGUserbot avviato in background usando screen. \n";
