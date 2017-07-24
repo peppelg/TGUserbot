@@ -3,9 +3,7 @@
 Installazione
 -------------
 	curl https://peppelg.github.io/tguserbot_install.sh | sudo bash -e
-	git clone https://github.com/peppelg/TGUserbot
 	cd TGUserbot
-	composer update
 
 
 Configurazione
