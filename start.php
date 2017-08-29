@@ -129,10 +129,14 @@ while (true) {
       } catch (\danog\MadelineProto\RPCErrorException $e) {
         if ($impostazioni['invia_errori']) {
           sm($chatID, '<b>Errore:</b> <code>' . $e->getMessage() . '</code>');
-          echo PHP_EOL.'Errore: ' . $e->getMessage().PHP_EOL;
-        } else {
-          echo PHP_EOL.'Errore: ' . $e->getMessage().PHP_EOL;
         }
+        echo PHP_EOL.'Errore: ' . $e->getMessage().PHP_EOL;
+      }
+      catch (\danog\MadelineProto\Exception $e) {
+        if ($impostazioni['invia_errori']) {
+          sm($chatID, '<b>Errore:</b> <code>' . $e->getMessage() . '</code>');
+        }
+        echo PHP_EOL.'Errore: ' . $e->getMessage().PHP_EOL;
       }
     }
     //Pulizia
