@@ -58,13 +58,14 @@ if (!file_exists($settings['session'])) {
     $authorization = $MadelineProto->complete_2fa_login(readline($strings['ask_2fa_password']));
   }
   if ($authorization['_'] === 'account.needSignup') {
-    echo $strings['ask_name'];
+    /*echo $strings['ask_name'];
     $name = fgets(STDIN);
     if ($name == "") {
       $name = 'TGUserbot';
     }
     $authorization = $MadelineProto->complete_signup($name, '');
-  }
+  }*/
+  echo PHP_EOL . 'Registra il tuo account prima, o sarà bannato da Telegram all\'istante.' . PHP_EOL;
   $MadelineProto->serialize($settings['session']);
 } else {
   $MadelineProto = \danog\MadelineProto\Serialization::deserialize($settings['session']);
