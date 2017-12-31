@@ -7,8 +7,7 @@ Automatica (Ubuntu/Debian)
 	curl https://peppelg.github.io/tguserbot_install.sh | sudo bash -e
 	cd TGUserbot
 
-Manuale
-
+Manuale:
 Installa i pacchetti `git zip php php-mbstring php-xml php-gmp php-curl php-mcrypt php-bcmath php-zip php-json php-sockets`
 
 	curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/bin --filename=composer
@@ -18,14 +17,15 @@ Installa i pacchetti `git zip php php-mbstring php-xml php-gmp php-curl php-mcry
 
 Impostazioni
 ---------------
-Puoi modificare le impostazioni in impostazioni.php.
-language - imposta la lingua
-session - imposta il nome del file della sessione madeline
-send_errors - invia errori in chat
-readmsg - legge i messaggi in chat privata
-always_online - mantiene lo stato in linea
-old_chatinfo - usa il sistema di TGUserbot V1 per trovare le informazioni delle chat
-auto_reboot - se TGUserbot crasha si riavvia automaticamente
+Impostazioni in impostazioni.php
+
+	language - imposta la lingua
+	session - imposta il nome del file della sessione madeline
+	send_errors - invia errori in chat
+	readmsg - legge i messaggi in chat privata
+	always_online - mantiene lo stato in linea
+	old_chatinfo - usa il sistema di TGUserbot V1 per trovare le informazioni delle chat
+	auto_reboot - se TGUserbot crasha si riavvia automaticamente
 
 
 Avvio
@@ -41,10 +41,31 @@ Aggiornare la base
 	php start.php update
 
 
+Variabili e funzioni
+--------------------
+Variabili
+
+	$msg - messaggio
+	$chatID - id della chat
+	$userID - id utente
+	$name - nome dell'utente
+	$username - username dell'utente
+	$title - titolo della chat
+	$chatusername - username della chat
+	
+	
+Funzioni
+
+	sm(Chat, Message, Reply, ParseMode);
+	
+	
+
+
 Supporto
 --------
-[Gruppo Telegram](https://t.me/joinchat/AAAAAEHRBNZBqxOlwtwBaQ)
+[Gruppo Telegram di TGUserbot](https://t.me/joinchat/HIyPnk3GQ7525LpP62yIWA)
+[Gruppo Telegram di peppelg](https://t.me/joinchat/AAAAAEHRBNZBqxOlwtwBaQ)
 
 [Gruppo Telegram di MadelineProto](https://t.me/pwrtelegramgroupita)
 
-[Gruppo Telegram di MadelineProto inglese](https://t.me/pwrtelegramgroup)
+[Gruppo Telegram di MadelineProto inglese](https://t.me/joinchat/AAAAAD6K-aJng8nt7zB93w)
