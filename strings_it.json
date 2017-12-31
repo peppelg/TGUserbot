@@ -6,9 +6,9 @@
   "ask_2fa_password": "Inserisci la password della verifica in due passaggi: ",
   "ask_name": "Inserisci il nome: ",
   "session_loaded": "Sessione caricata!",
-  "type_megagroup": "supergruppo",
-  "type_group": "gruppo",
-  "type_pvtchat": "privata",
   "error": "Errore: ",
-  "shitty_multithread_warning": "Attemzione! Il multithread non è stabile e potrebbe trasformarsi una forkbomb,,., vuoi continuare? (y/n) "
+  "background": "TGUserbot avviato in background.",
+  "updating": "Aggiornamento in corso...",
+  "done": "Fatto!",
+  "shitty_multithread_warning": "Attenzione! Il multithread non è stabile e potrebbe trasformarsi una forkbomb,,., vuoi continuare? (y/n) "
 }

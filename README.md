@@ -8,18 +8,24 @@ Automatica (Ubuntu/Debian)
 	cd TGUserbot
 
 Manuale
-Installa i pacchetti `php php-mbstring php-xml php-gmp php-curl php-mcrypt php-bcmath`
+
+Installa i pacchetti `git zip php php-mbstring php-xml php-gmp php-curl php-mcrypt php-bcmath php-zip php-json php-sockets`
 
 	curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/bin --filename=composer
 	git clone https://github.com/peppelg/TGUserbot
 	cd TGUserbot
 	composer update
-	
-Configurazione
+
+Impostazioni
 ---------------
-Apri il file `.env` e sostituisci `+390123456789` col numero di telefono.
-E' consigliato [creare](https://my.telegram.org) l'api_id e l'api_hash.
-Per "personalizzare" il bot modifica `bot.php`
+Puoi modificare le impostazioni in impostazioni.php.
+language - imposta la lingua
+session - imposta il nome del file della sessione madeline
+send_errors - invia errori in chat
+readmsg - legge i messaggi in chat privata
+always_online - mantiene lo stato in linea
+old_chatinfo - usa il sistema di TGUserbot V1 per trovare le informazioni delle chat
+auto_reboot - se TGUserbot crasha si riavvia automaticamente
 
 
 Avvio
