@@ -8,7 +8,7 @@ Automatica (Ubuntu/Debian)
 	cd TGUserbot
 
 Manuale:
-Installa i pacchetti `git zip screen php php-mbstring php-xml php-gmp php-curl php-mcrypt php-bcmath php-zip php-json php-sockets`
+Installa i pacchetti `git zip screen php php-mbstring php-xml php-gmp php-curl php-mcrypt php-bcmath php-zip php-json`
 
 	curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/bin --filename=composer
 	git clone https://github.com/peppelg/TGUserbot
