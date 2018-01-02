@@ -41,6 +41,14 @@ Aggiornare la base
 	php start.php update
 
 
+Multi account
+-------------
+Carica una sessione: `php start.php sessions/nomesessione.madeline`
+
+Carica una sessione in background: `php start.php sessions/nomesessione.madeline background`
+
+🔥 Gestisci account: `php accountmanager.php`
+
 Variabili e funzioni
 --------------------
 Variabili
