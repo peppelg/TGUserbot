@@ -26,8 +26,21 @@ $addsession = function (CliMenu $menu) {
     require(__FILE__);
   }
 };
+$startall = function (CliMenu $menu) {
+  global $strings;
+  global $sessions;
+  foreach ($sessions as $session) {
+    if (substr($session, -9) === '.madeline') {
+      shell_exec('php start.php '.'sessions/'.$session.' background');
+      echo $session.' '.$strings['started'].PHP_EOL;
+    }
+  }
+  $menu->flash($strings['done'])
+    ->display();
+};
 $menu->setTitle('TGUserbot account manager')
   ->addItem($strings['add_account'], $addsession)
+  ->addItem($strings['start_all'], $startall)
   ->addLineBreak(' ');
   foreach ($sessions as $sessionN => $session) {
     if (substr($session, -9) === '.madeline') {
