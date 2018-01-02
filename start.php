@@ -71,10 +71,9 @@ if (!file_exists($settings['session'])) {
   }
   if ($authorization['_'] === 'account.needSignup') {
     echo $strings['ask_name'];
-    $name = fgets(STDIN);
-    if ($name == "") {
-      $name = 'TGUserbot';
-    }
+    $name = trim(fgets(STDIN));
+    if ($name == '') $name = trim(fgets(STDIN));
+    if ($name == '') $name = 'TGUserbot';
     $authorization = $MadelineProto->complete_signup($name, '');
   }
   $MadelineProto->serialize($settings['session']);
