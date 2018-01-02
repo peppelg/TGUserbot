@@ -11,6 +11,7 @@
         }
     ],
     "require": {
-        "danog/madelineproto": "dev-master"
+        "danog/madelineproto": "dev-master",
+        "php-school/cli-menu": "dev-master"
     }
 }
