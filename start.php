@@ -118,7 +118,7 @@ while (true) {
           if (isset($info['to']['bot_api_id'])) $chatID = $info['to']['bot_api_id'];
           if (isset($info['to']['type'])) $type = $info['to']['type'];
           if (isset($userID)) $info['from'] = $MadelineProto->get_info($userID);
-          if (isset($info['to']['User']['self']) and $info['to']['User']['self']) $chatID = $userID;
+          if (isset($info['to']['User']['self']) and isset($userID) and $info['to']['User']['self'] and $userID) $chatID = $userID;
           if (isset($type) and $type == 'chat') $type = 'group';
           if (isset($info['from']['User']['first_name'])) $name = $info['from']['User']['first_name']; else $name = NULL;
           if (isset($info['to']['Chat']['title'])) $title = $info['to']['Chat']['title']; else $title = NULL;
