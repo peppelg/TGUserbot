@@ -128,7 +128,7 @@ while (true) {
       }
       if (isset($msg) and $msg) {
         if ($settings['readmsg'] and isset($type) and isset($msgid) and isset($chatID) and $type == 'user' and $msgid and $chatID) $MadelineProto->messages->readHistory(['peer' => $chatID, 'max_id' => $msgid]);
-        if (isset($msg) and isset($chatID) and isset($type) and $msg and $chatID and $type) {
+        if (isset($msg) and isset($chatID) and isset($type) and isset($userID) and $msg and $chatID and $type and $userID) {
           if ($type == 'user') {
             echo $name.' ('.$userID.') >>> '.$msg.PHP_EOL;
           } else {
