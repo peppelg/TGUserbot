@@ -10,5 +10,15 @@
   "background": "TGUserbot avviato in background.",
   "updating": "Aggiornamento in corso...",
   "done": "Fatto!",
-  "shitty_multithread_warning": "Attenzione! Il multithread non è stabile e potrebbe trasformarsi una forkbomb,,., vuoi continuare? (y/n) "
+  "new_session_name": "Nome della nuova sessione (invio per annullare): ",
+  "add_account": "Aggiungi account",
+  "sessions": "Sessioni",
+  "start": "Avvia",
+  "start_background": "Avvia in background",
+  "delete_session": "Elimina sessione",
+  "started": "Avviato.",
+  "session_deleted": "Sessione eliminata.",
+  "go_back": "Torna indietro",
+  "exit": "Esci",
+  "shitty_multithread_warning": "Attemzione! Il multithread non è stabile e potrebbe trasformarsi una forkbomb,,., vuoi continuare? (y/n) "
 }
