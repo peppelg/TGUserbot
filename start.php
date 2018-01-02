@@ -2,6 +2,7 @@
 echo 'Loading settings...'.PHP_EOL;
 require('settings.php');
 $strings = @json_decode(file_get_contents('strings_'.$settings['language'].'.json'), 1);
+if (!file_exists('sessions')) mkdir('sessions');
 if (!isset($settings['multithread'])) $settings['multithread'] = 0;
 if ($settings['multithread'] and function_exists('pcntl_fork') == 0) $settings['multithread'] = 0;
 if (!is_array($strings)) {
@@ -11,22 +12,30 @@ if (!is_array($strings)) {
   }
   $strings = json_decode(file_get_contents('strings_it.json'), 1);
 }
-if (isset($argv[1]) and $argv[1] == 'background') {
-  shell_exec('screen -d -m php start.php');
-  echo PHP_EOL.$strings['background'].PHP_EOL;
-  exit;
-}
-if (isset($argv[1]) and $argv[1] == 'update') {
-  echo PHP_EOL.$strings['updating'].PHP_EOL;
-  $bot = file_get_contents('bot.php');
-  $settings = file_get_contents('settings.php');
-  shell_exec('git reset --hard HEAD');
-  shell_exec('git pull');
-  passthru('composer update');
-  file_put_contents('bot.php', $bot);
-  file_put_contents('settings.php', $settings);
-  echo PHP_EOL.$strings['done'].PHP_EOL;
-  exit;
+if (isset($argv[1]) and $argv[1]) {
+  if ($argv[1] == 'background') {
+    shell_exec('screen -d -m php start.php');
+    echo PHP_EOL.$strings['background'].PHP_EOL;
+    exit;
+  }
+  if (isset($argv[2]) and $argv[2] == 'background') {
+    shell_exec('screen -d -m php start.php '.escapeshellarg($argv[1]));
+    echo PHP_EOL.$strings['background'].PHP_EOL;
+    exit;
+  }
+  if ($argv[1] == 'update') {
+    echo PHP_EOL.$strings['updating'].PHP_EOL;
+    $bot = file_get_contents('bot.php');
+    $settings = file_get_contents('settings.php');
+    shell_exec('git reset --hard HEAD');
+    shell_exec('git pull');
+    passthru('composer update');
+    file_put_contents('bot.php', $bot);
+    file_put_contents('settings.php', $settings);
+    echo PHP_EOL.$strings['done'].PHP_EOL;
+    exit;
+  }
+  $settings['session'] = $argv[1];
 }
 if ($settings['auto_reboot'] and function_exists('pcntl_exec')) {
   register_shutdown_function(function () {
@@ -55,7 +64,10 @@ if (!file_exists($settings['session'])) {
   $code = fgets(STDIN, (isset($sentCode['type']['length']) ? $sentCode['type']['length'] : 5) + 1);
   $authorization = $MadelineProto->complete_phone_login($code);
   if ($authorization['_'] === 'account.password') {
-    $authorization = $MadelineProto->complete_2fa_login(readline($strings['ask_2fa_password']));
+    echo $strings['ask_2fa_password'];
+    $password = trim(fgets(STDIN));
+    if ($password == '') $password = trim(fgets(STDIN));
+    $authorization = $MadelineProto->complete_2fa_login($password);
   }
   if ($authorization['_'] === 'account.needSignup') {
     echo $strings['ask_name'];
