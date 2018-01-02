@@ -1,5 +1,7 @@
 # TGUserbot
-
+![TGUserbot account manager](https://i.imgur.com/B6TUHyv.png)
+![TGUserbot account manager](https://i.imgur.com/USK2Epe.png)
+![TGUserbot](https://i.imgur.com/LKit3Ce.png)
 Installazione
 -------------
 Automatica (Ubuntu/Debian)
