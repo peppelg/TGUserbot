@@ -1,7 +1,7 @@
 <?php
 $settings = [
   'language' => 'it',
-  'session' => 'session.madeline',
+  'session' => 'sessions/default.madeline',
   'send_errors' => true,
   'readmsg' => true,
   'always_online' => false,
