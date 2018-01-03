@@ -21,5 +21,5 @@
   "session_deleted": "Sessione eliminata.",
   "go_back": "Torna indietro",
   "exit": "Esci",
-  "shitty_multithread_warning": "Attemzione! Il multithread non è stabile e potrebbe trasformarsi una forkbomb,,., vuoi continuare? (y/n) "
+  "shitty_multithread_warning": "Attenzione! Il multithread non è stabile e potrebbe trasformarsi una forkbomb,,., vuoi continuare? (y/n) "
 }

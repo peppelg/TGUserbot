@@ -48,6 +48,8 @@ include('functions.php');
 if ($settings['multithread']) {
   $m = readline($strings['shitty_multithread_warning']);
   if ($m != 'y') exit;
+  declare(ticks=1);
+  $manager = new SimpleProcess\ProcessManager();
 }
 $MadelineProto = new \danog\MadelineProto\API(['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]);
 echo $strings['loaded'].PHP_EOL;
@@ -136,20 +138,24 @@ while (true) {
           }
         }
       }
-      if ($settings['multithread']) {
-        if (!isset($tmsgid)) $tmsgid = 1;
-        if (isset($msg) and isset($chatID) and isset($userID) and isset($msgid) and isset($tmsgid) and $msg and $chatID and $userID and $msgid != $tmsgid) {
-          $pid = pcntl_fork();
-          if ($pid == -1) {
-            die('could not fork');
-          } elseif ($pid) {
-          } else {
-            $MadelineProto->reset_session(1, 1);
-            require('bot.php');
-          }
-        } elseif(isset($tmsgid) and isset($msgid) and $tmsgid != $msgid) {
+      if ($settings['multithread'] and isset($msg) and isset($userID) and isset($msgid) and isset($info) and isset($chatID) and isset($type)) {
+        $manager->fork(new SimpleProcess\Process(function() {
+          global $MadelineProto;
+          global $settings;
+          global $update;
+          global $msg;
+          global $userID;
+          global $msgid;
+          global $info;
+          global $chatID;
+          global $name;
+          global $username;
+          global $title;
+          global $usernamechat;
+          $MadelineProto->reset_session();
           require('bot.php');
-        }
+          $MadelineProto->serialize($settings['session']);
+        }, 'TGUserbot'));
       } elseif(isset($msg) and isset($chatID) and $msg) {
         try {
           require('bot.php');
@@ -163,7 +169,6 @@ while (true) {
           }
         }
       }
-      if ($settings['multithread'] and isset($msgid) and $msgid) $tmsgid = $msgid;
       if (isset($msg)) unset($msg);
       if (isset($chatID)) unset($chatID);
       if (isset($userID)) unset($userID);
