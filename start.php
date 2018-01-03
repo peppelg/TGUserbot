@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 echo 'Loading settings...'.PHP_EOL;
 require('settings.php');
