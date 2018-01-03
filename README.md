@@ -68,6 +68,7 @@ Funzioni
 
 	sm(Chat, Message, Reply, ParseMode);
 	
+[Metodi MadelineProto](https://docs.madelineproto.xyz/API_docs/methods/)
 	
 
 
