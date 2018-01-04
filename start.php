@@ -30,9 +30,9 @@ if (isset($argv[1]) and $argv[1]) {
     $settings = file_get_contents('settings.php');
     shell_exec('git reset --hard HEAD');
     shell_exec('git pull');
-    passthru('composer update');
     file_put_contents('bot.php', $bot);
     file_put_contents('settings.php', $settings);
+    passthru('composer update');
     echo PHP_EOL.$strings['done'].PHP_EOL;
     exit;
   }
