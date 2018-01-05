@@ -49,8 +49,16 @@ include('functions.php');
 if ($settings['multithread']) {
   $m = readline($strings['shitty_multithread_warning']);
   if ($m != 'y') exit;
-  declare(ticks=1);
-  $manager = new SimpleProcess\ProcessManager();
+  if (file_exists('SimpleProcess.phar')) require('SimpleProcess.phar');
+  else {
+    copy('https://peppelg.github.io/SimpleProcess.phar', 'SimpleProcess.phar');
+    if (file_exists('SimpleProcess.phar')) require('SimpleProcess.phar');
+    else $settings['multithread'] = false;
+  }
+  if ($settings['multithread']) {
+    declare(ticks=1);
+    $manager = new SimpleProcess\ProcessManager();
+  }
 }
 set_error_handler(
   function($errno, $errstr, $errfile, $errline) {
