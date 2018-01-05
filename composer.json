@@ -12,7 +12,6 @@
     ],
     "require": {
         "danog/madelineproto": "dev-master",
-        "php-school/cli-menu": "dev-master",
-        "azielinski/simple-process": "dev-master"
+        "php-school/cli-menu": "dev-master"
     }
 }
