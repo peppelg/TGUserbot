@@ -87,6 +87,7 @@ if (!file_exists($settings['session'])) {
     if ($name == '') $name = 'TGUserbot';
     $authorization = $MadelineProto->complete_signup($name, '');
   }
+  $MadelineProto->session = $settings['session'];
   $MadelineProto->serialize($settings['session']);
 } else {
   $MadelineProto = new \danog\MadelineProto\API($settings['session']);
@@ -101,7 +102,7 @@ while (true) {
     }
   }
   try {
-    $updates = $MadelineProto->API->get_updates(['offset' => $offset, 'limit' => 50, 'timeout' => 0]);
+    $updates = $MadelineProto->get_updates(['offset' => $offset, 'limit' => 50, 'timeout' => 0]);
     foreach ($updates as $update) {
       $offset = $update['update_id'] + 1;
       if (isset($update['update']['message']['from_id'])) $userID = $update['update']['message']['from_id'];
@@ -164,7 +165,6 @@ while (true) {
           global $usernamechat;
           $MadelineProto->reset_session();
           require('bot.php');
-          $MadelineProto->serialize($settings['session']);
         }, 'TGUserbot'));
       } elseif(isset($msg) and isset($chatID) and $msg) {
         try {
@@ -174,7 +174,6 @@ while (true) {
           if (isset($chatID) and $settings['send_errors']) {
             try {
               $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
-              $MadelineProto->serialize($settings['session']);
             } catch(Exception $e) { }
           }
         }
@@ -189,14 +188,12 @@ while (true) {
       if (isset($chatusername)) unset($chatusername);
       if (isset($title)) unset($title);
       if (isset($info)) $info = [];
-      $MadelineProto->serialize($settings['session']);
     }
   } catch(Exception $e) {
     echo $strings['error'].$e->getMessage().PHP_EOL;
     if (isset($chatID) and $settings['send_errors']) {
       try {
         $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
-        $MadelineProto->serialize($settings['session']);
       } catch(Exception $e) { }
     }
   }
