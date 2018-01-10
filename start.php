@@ -164,12 +164,12 @@ while (true) {
       } elseif(isset($msg) and isset($chatID) and $msg) {
         try {
           require('bot.php');
-        } catch(Exception $e) {
+        } catch(\danog\MadelineProto\Exception $e) {
           echo $strings['error'].$e->getMessage().PHP_EOL;
           if (isset($chatID) and $settings['send_errors']) {
             try {
               $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
-            } catch(Exception $e) { }
+            } catch(\danog\MadelineProto\Exception $e) { }
           }
         }
       }
@@ -184,12 +184,12 @@ while (true) {
       if (isset($title)) unset($title);
       if (isset($info)) $info = [];
     }
-  } catch(Exception $e) {
+  } catch(\danog\MadelineProto\Exception $e) {
     echo $strings['error'].$e->getMessage().PHP_EOL;
     if (isset($chatID) and $settings['send_errors']) {
       try {
         $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
-      } catch(Exception $e) { }
+      } catch(\danog\MadelineProto\Exception $e) { }
     }
   }
 }
