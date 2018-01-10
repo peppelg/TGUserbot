@@ -60,11 +60,6 @@ if ($settings['multithread']) {
     $manager = new SimpleProcess\ProcessManager();
   }
 }
-set_error_handler(
-  function($errno, $errstr, $errfile, $errline) {
-    throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
-  }
-);
 if (!file_exists($settings['session'])) {
   $MadelineProto = new \danog\MadelineProto\API(['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]);
   echo $strings['loaded'].PHP_EOL;
