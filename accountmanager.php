@@ -29,6 +29,7 @@ $addsession = function (CliMenu $menu) {
 $startall = function (CliMenu $menu) {
   global $strings;
   global $sessions;
+  shell_exec('pkill -f start.php');
   foreach ($sessions as $session) {
     if (substr($session, -9) === '.madeline') {
       shell_exec('php start.php '.'sessions/'.$session.' background');
@@ -38,9 +39,17 @@ $startall = function (CliMenu $menu) {
   $menu->flash($strings['done'])
     ->display();
 };
+$stopall = function (CliMenu $menu) {
+  global $strings;
+  global $sessions;
+  shell_exec('pkill -f start.php');
+  $menu->flash($strings['done'])
+    ->display();
+};
 $menu->setTitle('TGUserbot account manager')
   ->addItem($strings['add_account'], $addsession)
   ->addItem($strings['start_all'], $startall)
+  ->addItem($strings['stop_all'], $stopall)
   ->addLineBreak(' ');
   foreach ($sessions as $sessionN => $session) {
     if (substr($session, -9) === '.madeline') {
