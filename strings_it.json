@@ -13,6 +13,7 @@
   "new_session_name": "Nome della nuova sessione (invio per annullare): ",
   "add_account": "Aggiungi account",
   "start_all": "Avvia tutto",
+  "stop_all": "Arresta tutto",
   "sessions": "Sessioni",
   "start": "Avvia",
   "start_background": "Avvia in background",
