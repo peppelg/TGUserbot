@@ -1,4 +1,6 @@
 {
+  "loading_plugins": "Sto caricando i plugin...",
+  "plugins_loaded": "plugin caricati!",
   "loading": "Sto caricando MadelineProto...",
   "loaded": "MadelineProto caricato!",
   "ask_phone_number": "Inserisci il numero di telefono: ",
