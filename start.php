@@ -60,6 +60,41 @@ if ($settings['multithread']) {
     $manager = new SimpleProcess\ProcessManager();
   }
 }
+if (file_exists('plugins') and is_dir('plugins')) {
+  $settings['plugins'] = true;
+  echo $strings['loading_plugins'].PHP_EOL;
+  class TGUserbotPlugin {
+    public function onUpdate() {
+
+    }
+    public function onStart() {
+
+    }
+  }
+  $pluginslist = array_values(array_diff(scandir('plugins'), ['..', '.']));
+  $plugins = [];
+  $pluginN = 0;
+  foreach ($pluginslist as $plugin) {
+    if (substr($plugin, -4) == '.php') {
+      include('plugins/'.$plugin);
+    }
+  }
+  foreach (get_declared_classes() as $class) {
+    if (is_subclass_of($class, 'TGUserbotPlugin')) {
+      $pluginN++;
+      $plugin = new $class();
+      if (method_exists($class, 'onStart')) {
+        $plugins['onStart'][$class] = $plugin;
+      }
+      if (method_exists($class, 'onUpdate')) {
+        $plugins['onUpdate'][$class] = $plugin;
+      }
+    }
+  }
+  echo $pluginN.' '.$strings['plugins_loaded'].PHP_EOL;
+} else {
+  $settings['plugins'] = false;
+}
 if (!file_exists($settings['session'])) {
   $MadelineProto = new \danog\MadelineProto\API(['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]);
   echo $strings['loaded'].PHP_EOL;
@@ -89,6 +124,11 @@ if (!file_exists($settings['session'])) {
   echo $strings['loaded'].PHP_EOL;
 }
 echo $strings['session_loaded'].PHP_EOL;
+if ($settings['plugins']) {
+  foreach ($plugins['onStart'] as $plugin) {
+    $plugin->onStart();
+  }
+}
 $offset = 0;
 while (true) {
   if ($settings['always_online']) {
@@ -116,10 +156,6 @@ while (true) {
           $chatID = $update['update']['message']['from_id'];
           $type = 'user';
         }
-        $name = NULL;
-        $title = NULL;
-        $username = NULL;
-        $chatusername = NULL;
       } else {
         if (isset($update['update']['message'])) {
           $info['to'] = $MadelineProto->get_info($update['update']['message']['to_id']);
@@ -144,6 +180,21 @@ while (true) {
           }
         }
       }
+      if (!isset($msg)) $msg = NULL;
+      if (!isset($chatID)) $chatID = NULL;
+      if (!isset($userID)) $userID = NULL;
+      if (!isset($msgid)) $msgid = NULL;
+      if (!isset($type)) $type = NULL;
+      if (!isset($name)) $name = NULL;
+      if (!isset($username)) $username = NULL;
+      if (!isset($chatusername)) $chatusername = NULL;
+      if (!isset($title)) $title = NULL;
+      if (!isset($info)) $info = NULL;
+      if ($settings['plugins']) {
+        foreach ($plugins['onUpdate'] as $plugin) {
+          $plugin->onUpdate();
+        }
+      }
       if ($settings['multithread'] and isset($msg) and isset($userID) and isset($msgid) and isset($info) and isset($chatID) and isset($type)) {
         $manager->fork(new SimpleProcess\Process(function() {
           global $MadelineProto;
@@ -161,7 +212,7 @@ while (true) {
           $MadelineProto->reset_session();
           require('bot.php');
         }, 'TGUserbot'));
-      } elseif(isset($msg) and isset($chatID) and $msg) {
+      } else {
         try {
           require('bot.php');
         } catch(\danog\MadelineProto\Exception $e) {
