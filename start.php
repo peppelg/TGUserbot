@@ -92,6 +92,7 @@ if (file_exists('plugins') and is_dir('plugins')) {
     }
   }
   echo $pluginN.' '.$strings['plugins_loaded'].PHP_EOL;
+  if ($pluginN == 0) $settings['plugins'] = false;
 } else {
   $settings['plugins'] = false;
 }
