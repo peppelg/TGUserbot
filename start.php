@@ -166,7 +166,8 @@ if (isset($settings['cronjobs']) and $settings['cronjobs']) {
       foreach ($MadelineProto->cronjobs as $time => $cronjob) {
         if (date('d m Y H i', $time) === $now) {
           cronjobDel($cronjob);
-          echo 'CRONJOB >>> '.$cronjob.PHP_EOL;
+          if (is_string($cronjob)) echo 'CRONJOB >>> '.$cronjob.PHP_EOL;
+          else echo 'CRONJOB >>> *array*'.PHP_EOL;
           $msg = 'cronjob';
           $msgid = 'cronjob';
           $type = 'cronjob';
@@ -247,6 +248,7 @@ while (true) {
       if (!isset($chatusername)) $chatusername = NULL;
       if (!isset($title)) $title = NULL;
       if (!isset($info)) $info = NULL;
+      if (!isset($cronjob)) $cronjob = NULL;
       if ($settings['plugins']) {
         foreach ($plugins['onUpdate'] as $plugin) {
           $plugin->onUpdate();
