@@ -130,6 +130,61 @@ if ($settings['plugins']) {
     $plugin->onStart();
   }
 }
+if (isset($settings['cronjobs']) and $settings['cronjobs']) {
+  function cronjobAdd($time, $id) {
+    global $MadelineProto;
+    if (!is_numeric($time) and strlen($time) !== 10) {
+      $time = strtotime($time);
+    }
+    if (!is_numeric($time)) return false;
+    if ($time < time()) return false;
+    $MadelineProto->cronjobs[$time] = $id;
+    return true;
+  }
+  function cronjobDel($id) {
+    global $MadelineProto;
+    $cronid = array_search($id, $MadelineProto->cronjobs);
+    if ($cronid !== false) {
+      unset($MadelineProto->cronjobs[$cronid]);
+      return true;
+    } else {
+      return false;
+    }
+  }
+  function cronjobReset() {
+    global $MadelineProto;
+    $MadelineProto->cronjobs = [];
+    return true;
+  }
+  function cronrun() {
+    global $MadelineProto;
+    global $settings;
+    global $strings;
+    global $plugins;
+    $now = date('d m Y H i');
+    if (isset($MadelineProto->cronjobs) and !empty($MadelineProto->cronjobs)) {
+      foreach ($MadelineProto->cronjobs as $time => $cronjob) {
+        if (date('d m Y H i', $time) === $now) {
+          cronjobDel($cronjob);
+          echo 'CRONJOB >>> '.$cronjob.PHP_EOL;
+          $msg = 'cronjob';
+          $msgid = 'cronjob';
+          $type = 'cronjob';
+          if ($settings['plugins']) {
+            foreach ($plugins['onUpdate'] as $plugin) {
+              $plugin->onUpdate();
+            }
+          }
+          try {
+            require('bot.php');
+          } catch(\danog\MadelineProto\Exception $e) {
+            echo $strings['error'].$e->getMessage().PHP_EOL;
+          }
+        }
+      }
+    }
+  }
+}
 $offset = 0;
 while (true) {
   if ($settings['always_online']) {
@@ -137,6 +192,7 @@ while (true) {
       $MadelineProto->account->updateStatus(['offline' => 0]);
     }
   }
+  if (isset($settings['cronjobs']) and $settings['cronjobs']) cronrun();
   try {
     $updates = $MadelineProto->get_updates(['offset' => $offset, 'limit' => 50, 'timeout' => 0]);
     foreach ($updates as $update) {
