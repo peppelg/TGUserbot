@@ -62,6 +62,7 @@ Variabili
 	$username - username dell'utente
 	$title - titolo della chat
 	$chatusername - username della chat
+	$cronjob - id cronjob 
 	
 	
 Funzioni
@@ -70,7 +71,33 @@ Funzioni
 	
 [Metodi MadelineProto](https://docs.madelineproto.xyz/API_docs/methods/)
 	
+Cronjobs (farzi)
+---------
+Crea un nuovo cronjob (tra un minuto):
 
+	cronjobAdd('next minute', 'cronjobid');
+	//oppure
+	cronjobAdd(time()+60, 'cronjobid');
+
+Cancella un cronjob:
+
+	cronjobDel('cronjobid');
+
+Cancella tutti i cronjob:
+
+	cronjobReset();
+	
+Quando sarà il momento, verrà dichiarata la variabile `$cronjob`, potrai gestire tutto da bot.php.
+
+Esempio (bot.php):
+
+	if ($msg == 'Invia tra un minuto un messaggio a 🅱️eppe') {
+	  cronjobAdd('next minute', 'messaggio a peppe');
+	  sm($chatID, 'Ok! Tra un minuto invierò un messaggio a Peppe');
+	}
+	if (isset($cronjob) and $cronjob == 'messaggio a peppe') {
+	  sm('@peppelg1', 'Zao, kome stai¿¿');
+	}
 
 Supporto
 --------
