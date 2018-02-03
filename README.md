@@ -99,6 +99,14 @@ Esempio (bot.php):
 	  sm('@peppelg1', 'Zao, kome stai¿¿');
 	}
 
+⚠️ I secondi non verrano considerati
+
+Plugin
+-------
+Per installare un plugin crea una cartella chiamata `plugins` e butttaci dentro i plugin. Facile eh?
+
+[Scarica un plugin di esempio](https://peppelg.github.io/tguserbotPlugin_memoryusage.php)
+
 Supporto
 --------
 [Gruppo Telegram di TGUserbot](https://t.me/joinchat/HIyPnk3GQ7525LpP62yIWA)
