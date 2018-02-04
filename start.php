@@ -40,7 +40,8 @@ if (isset($argv[1]) and $argv[1]) {
 }
 if ($settings['auto_reboot'] and function_exists('pcntl_exec')) {
   register_shutdown_function(function () {
-    pcntl_exec($_SERVER['_'], array("start.php", 0));
+    global $settings;
+    pcntl_exec($_SERVER['_'], array('start.php', $settings['session']));
   });
 }
 echo $strings['loading'].PHP_EOL;
