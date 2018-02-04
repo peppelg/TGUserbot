@@ -23,11 +23,13 @@ Impostazioni in impostazioni.php
 
 	language - imposta la lingua
 	session - imposta il nome del file della sessione madeline
+	cronjobs - attivare i cronjob?
 	send_errors - invia errori in chat
 	readmsg - legge i messaggi in chat privata
 	always_online - mantiene lo stato in linea
 	old_chatinfo - usa il sistema di TGUserbot V1 per trovare le informazioni delle chat
 	auto_reboot - se TGUserbot crasha si riavvia automaticamente
+	multithread - abilita multithread
 
 
 Avvio
@@ -115,4 +117,4 @@ Supporto
 
 [Gruppo Telegram di MadelineProto](https://t.me/pwrtelegramgroupita)
 
-[Gruppo Telegram di MadelineProto inglese](https://t.me/joinchat/AAAAAD6K-aJng8nt7zB93w)
+[Gruppo Telegram di MadelineProto inglese](https://t.me/joinchat/Bgrajz6K-aJKu0IpGsLpBg)
