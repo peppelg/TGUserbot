@@ -182,7 +182,7 @@ if (isset($settings['cronjobs']) and $settings['cronjobs']) {
           }
           try {
             require('bot.php');
-          } catch(\danog\MadelineProto\Exception $e) {
+          } catch(Exception $e) {
             echo $strings['error'].$e->getMessage().PHP_EOL;
           }
         }
@@ -284,12 +284,12 @@ while (true) {
       } else {
         try {
           require('bot.php');
-        } catch(\danog\MadelineProto\Exception $e) {
+        } catch(Exception $e) {
           echo $strings['error'].$e->getMessage().PHP_EOL;
           if (isset($chatID) and $settings['send_errors']) {
             try {
               $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
-            } catch(\danog\MadelineProto\Exception $e) { }
+            } catch(Exception $e) { }
           }
         }
       }
@@ -304,12 +304,12 @@ while (true) {
       if (isset($title)) unset($title);
       if (isset($info)) $info = [];
     }
-  } catch(\danog\MadelineProto\Exception $e) {
+  } catch(Exception $e) {
     echo $strings['error'].$e->getMessage().PHP_EOL;
     if (isset($chatID) and $settings['send_errors']) {
       try {
         $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
-      } catch(\danog\MadelineProto\Exception $e) { }
+      } catch(Exception $e) { }
     }
   }
 }
