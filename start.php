@@ -161,6 +161,10 @@ if (isset($settings['cronjobs']) and $settings['cronjobs']) {
     global $settings;
     global $strings;
     global $plugins;
+    global $msg;
+    global $msgid;
+    global $type;
+    global $cronjob;
     $now = date('d m Y H i');
     if (isset($MadelineProto->cronjobs) and !empty($MadelineProto->cronjobs)) {
       foreach ($MadelineProto->cronjobs as $time => $cronjob) {
@@ -193,7 +197,13 @@ while (true) {
       $MadelineProto->account->updateStatus(['offline' => 0]);
     }
   }
-  if (isset($settings['cronjobs']) and $settings['cronjobs']) cronrun();
+  if (isset($settings['cronjobs']) and $settings['cronjobs']) {
+    $msg = NULL;
+    $msgid = NULL;
+    $type = NULL;
+    $cronjob = NULL;
+    cronrun();
+  }
   try {
     $updates = $MadelineProto->get_updates(['offset' => $offset, 'limit' => 50, 'timeout' => 0]);
     foreach ($updates as $update) {
