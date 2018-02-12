@@ -239,8 +239,16 @@ while (true) {
           if (isset($info['to']['Chat']['username'])) $chatusername = $info['to']['Chat']['username']; else $chatusername = NULL;
         }
       }
+      if ($settings['readmsg'] and isset($chatID) and $chatID and isset($userID) and $userID and isset($msgid) and $msgid and isset($type) and $type) {
+        try {
+          if (in_array($type, ['user', 'bot', 'group'])) {
+            $MadelineProto->messages->readHistory(['peer' => $chatID, 'max_id' => $msgid]);
+          } elseif(in_array($type, ['channel', 'supergroup'])) {
+            $MadelineProto->channels->readHistory(['channel' => $chatID, 'max_id' => $msgid]);
+          }
+        } catch(Exception $e) { }
+      }
       if (isset($msg) and $msg) {
-        if ($settings['readmsg'] and isset($type) and isset($msgid) and isset($chatID) and $type == 'user' and $msgid and $chatID) $MadelineProto->messages->readHistory(['peer' => $chatID, 'max_id' => $msgid]);
         if (isset($msg) and isset($chatID) and isset($type) and isset($userID) and $msg and $chatID and $type and $userID) {
           if ($type == 'user') {
             echo $name.' ('.$userID.') >>> '.$msg.PHP_EOL;
