@@ -134,7 +134,7 @@ if ($settings['plugins']) {
 if (isset($settings['cronjobs']) and $settings['cronjobs']) {
   function cronjobAdd($time, $id) {
     global $MadelineProto;
-    if (!is_numeric($time) and strlen($time) !== 10) {
+    if (!is_numeric($time) or strlen($time) !== 10) {
       $time = strtotime($time);
     }
     if (!is_numeric($time)) return false;
