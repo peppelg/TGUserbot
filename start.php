@@ -183,6 +183,7 @@ if (isset($settings['cronjobs']) and $settings['cronjobs']) {
           }
           try {
             require('bot.php');
+            $cronjob = NULL;
           } catch(Exception $e) {
             echo $strings['error'].$e->getMessage().PHP_EOL;
           }
@@ -267,7 +268,7 @@ while (true) {
       if (!isset($chatusername)) $chatusername = NULL;
       if (!isset($title)) $title = NULL;
       if (!isset($info)) $info = NULL;
-      if (!isset($cronjob)) $cronjob = NULL;
+      $cronjob = NULL;
       if ($settings['plugins']) {
         foreach ($plugins['onUpdate'] as $plugin) {
           $plugin->onUpdate();
