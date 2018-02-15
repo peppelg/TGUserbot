@@ -6,11 +6,11 @@ Installazione
 -------------
 Automatica (Ubuntu/Debian)
 
-	curl https://peppelg.github.io/tguserbot_installer.sh | bash -e
+	curl https://peppelg.github.io/tguserbot_installer.sh | sudo bash -e
 	cd TGUserbot
 
 Manuale:
-Installa i pacchetti `git zip screen php php-mbstring php-xml php-gmp php-curl php-mcrypt php-bcmath php-zip php-json`
+Installa i pacchetti `git zip screen php php-mbstring php-xml php-gmp php-curl php-bcmath php-zip php-json`
 
 	curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/bin --filename=composer
 	git clone https://github.com/peppelg/TGUserbot
