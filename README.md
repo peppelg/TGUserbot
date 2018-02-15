@@ -6,7 +6,7 @@ Installazione
 -------------
 Automatica (Ubuntu/Debian)
 
-	curl https://peppelg.github.io/tguserbot_installer.sh | sudo bash -e
+	curl https://peppelg.github.io/tguserbot_installer.sh | sudo bash
 	cd TGUserbot
 
 Manuale:
