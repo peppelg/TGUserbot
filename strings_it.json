@@ -26,5 +26,6 @@
   "exit": "Esci",
   "checking_updates": "Controllo nuovi update...",
   "new_update": "Nuovo update disponibile! Tra 10 secondi aggiornerò TGUserbot. Premi CTRL+C per annullare. (puoi disabilitare gli aggiornamenti in settings.php)",
+  "ntgv": "Una nuova versione di TGUserbot è disponibile. Usa php start.php per aggiornare.",
   "shitty_multithread_warning": "Attenzione! Il multithread non è stabile e potrebbe trasformarsi una forkbomb,,., vuoi continuare? (y/n) "
 }
