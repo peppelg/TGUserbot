@@ -51,6 +51,7 @@ if ($settings['auto_updates']) {
   if (trim(exec('git ls-remote git://github.com/peppelg/TGUserbot.git refs/heads/master | cut -f 1')) !== trim(file_get_contents('.git/refs/heads/master'))) {
     echo ' OK'.PHP_EOL;
     echo $strings['new_update'].PHP_EOL;
+    sleep(10);
     echo 'Aggiornamento in corso...'.PHP_EOL;
     passthru('php start.php update');
     echo PHP_EOL.PHP_EOL.'Riavvio...'.PHP_EOL.PHP_EOL;
