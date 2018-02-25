@@ -58,7 +58,7 @@ if ($settings['auto_updates']) {
     pcntl_exec($_SERVER['_'], array('start.php', $settings['session']));
     exit;
   } else {
-    echo ' OK'.PHP_EOL;
+    echo ' OK'.PHP_EOL.$strings['ntgv'].PHP_EOL;
   }
 }
 echo $strings['loading'].PHP_EOL;
