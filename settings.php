@@ -8,6 +8,5 @@ $settings = [
   'always_online' => false,
   'old_chatinfo' => false,
   'auto_reboot' => true,
-  'multithread' => false,
-  'auto_updates' => true
+  'multithread' => false
 ];
