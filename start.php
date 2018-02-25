@@ -112,7 +112,9 @@ if (file_exists('plugins') and is_dir('plugins')) {
   $settings['plugins'] = false;
 }
 if (!file_exists($settings['session'])) {
+  ob_start();
   $MadelineProto = new \danog\MadelineProto\API(['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]);
+  ob_get_clean();
   echo $strings['loaded'].PHP_EOL;
   echo $strings['ask_phone_number'];
   $phoneNumber = fgets(STDIN);
@@ -136,7 +138,9 @@ if (!file_exists($settings['session'])) {
   $MadelineProto->session = $settings['session'];
   $MadelineProto->serialize($settings['session']);
 } else {
+  ob_start();
   $MadelineProto = new \danog\MadelineProto\API($settings['session']);
+  ob_get_clean();
   echo $strings['loaded'].PHP_EOL;
 }
 echo $strings['session_loaded'].PHP_EOL;
