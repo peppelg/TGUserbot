@@ -2,6 +2,8 @@
 <?php
 echo 'Loading settings...'.PHP_EOL;
 require('settings.php');
+$settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'old_chatinfo' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true];
+if (isset($settings) and is_array($settings)) $settings = array_merge($settings_default, $settings); else $settings = $settings_default;
 $strings = @json_decode(file_get_contents('strings_'.$settings['language'].'.json'), 1);
 if (!file_exists('sessions')) mkdir('sessions');
 if (!isset($settings['multithread'])) $settings['multithread'] = 0;
@@ -44,6 +46,20 @@ if ($settings['auto_reboot'] and function_exists('pcntl_exec')) {
     pcntl_exec($_SERVER['_'], array('start.php', $settings['session']));
   });
 }
+if ($settings['auto_updates']) {
+  echo $strings['checking_updates'];
+  if (trim(exec('git ls-remote git://github.com/peppelg/TGUserbot.git refs/heads/master | cut -f 1')) !== trim(file_get_contents('.git/refs/heads/master'))) {
+    echo ' OK'.PHP_EOL;
+    echo $strings['new_update'].PHP_EOL;
+    echo 'Aggiornamento in corso...'.PHP_EOL;
+    passthru('php start.php update');
+    echo PHP_EOL.PHP_EOL.'Riavvio...'.PHP_EOL.PHP_EOL;
+    pcntl_exec($_SERVER['_'], array('start.php', $settings['session']));
+    exit;
+  } else {
+    echo ' OK'.PHP_EOL;
+  }
+}
 echo $strings['loading'].PHP_EOL;
 require('vendor/autoload.php');
 include('functions.php');
@@ -85,10 +101,7 @@ if (file_exists('plugins') and is_dir('plugins')) {
       $pluginN++;
       $plugin = new $class();
       if (method_exists($class, 'onStart')) {
-        $plugins['onStart'][$class] = $plugin;
-      }
-      if (method_exists($class, 'onUpdate')) {
-        $plugins['onUpdate'][$class] = $plugin;
+        $plugins[$class] = $plugin;
       }
     }
   }
@@ -127,7 +140,7 @@ if (!file_exists($settings['session'])) {
 }
 echo $strings['session_loaded'].PHP_EOL;
 if ($settings['plugins']) {
-  foreach ($plugins['onStart'] as $plugin) {
+  foreach ($plugins as $plugin) {
     $plugin->onStart();
   }
 }
@@ -177,7 +190,7 @@ if (isset($settings['cronjobs']) and $settings['cronjobs']) {
           $msgid = 'cronjob';
           $type = 'cronjob';
           if ($settings['plugins']) {
-            foreach ($plugins['onUpdate'] as $plugin) {
+            foreach ($plugins as $plugin) {
               $plugin->onUpdate();
             }
           }
@@ -270,7 +283,7 @@ while (true) {
       if (!isset($info)) $info = NULL;
       $cronjob = NULL;
       if ($settings['plugins']) {
-        foreach ($plugins['onUpdate'] as $plugin) {
+        foreach ($plugins as $plugin) {
           $plugin->onUpdate();
         }
       }
