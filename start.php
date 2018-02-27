@@ -312,7 +312,7 @@ while (true) {
           echo $strings['error'].$e.PHP_EOL;
           if (isset($chatID) and $settings['send_errors']) {
             try {
-              $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e.'</code>', 'parse_mode' => 'HTML']);
+              $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
             } catch(Exception $e) { }
           }
         }
@@ -332,7 +332,7 @@ while (true) {
     echo $strings['error'].$e.PHP_EOL;
     if (isset($chatID) and $settings['send_errors']) {
       try {
-        $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e.'</code>', 'parse_mode' => 'HTML']);
+        $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
       } catch(Exception $e) { }
     }
   }
