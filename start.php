@@ -199,7 +199,7 @@ if (isset($settings['cronjobs']) and $settings['cronjobs']) {
             require('bot.php');
             $cronjob = NULL;
           } catch(Exception $e) {
-            echo $strings['error'].$e->getMessage().PHP_EOL;
+            echo $strings['error'].$e.PHP_EOL;
           }
         }
       }
@@ -309,10 +309,10 @@ while (true) {
         try {
           require('bot.php');
         } catch(Exception $e) {
-          echo $strings['error'].$e->getMessage().PHP_EOL;
+          echo $strings['error'].$e.PHP_EOL;
           if (isset($chatID) and $settings['send_errors']) {
             try {
-              $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
+              $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e.'</code>', 'parse_mode' => 'HTML']);
             } catch(Exception $e) { }
           }
         }
@@ -329,10 +329,10 @@ while (true) {
       if (isset($info)) $info = [];
     }
   } catch(Exception $e) {
-    echo $strings['error'].$e->getMessage().PHP_EOL;
+    echo $strings['error'].$e.PHP_EOL;
     if (isset($chatID) and $settings['send_errors']) {
       try {
-        $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
+        $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e.'</code>', 'parse_mode' => 'HTML']);
       } catch(Exception $e) { }
     }
   }
