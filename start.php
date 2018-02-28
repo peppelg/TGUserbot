@@ -115,23 +115,28 @@ if (!file_exists($settings['session'])) {
   $MadelineProto = new \danog\MadelineProto\API(['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]);
   echo $strings['loaded'].PHP_EOL;
   echo $strings['ask_phone_number'];
-  $phoneNumber = fgets(STDIN);
-  $sentCode = $MadelineProto->phone_login($phoneNumber);
-  echo $strings['ask_login_code'];
-  $code = fgets(STDIN, (isset($sentCode['type']['length']) ? $sentCode['type']['length'] : 5) + 1);
-  $authorization = $MadelineProto->complete_phone_login($code);
-  if ($authorization['_'] === 'account.password') {
-    echo $strings['ask_2fa_password'];
-    $password = trim(fgets(STDIN));
-    if ($password == '') $password = trim(fgets(STDIN));
-    $authorization = $MadelineProto->complete_2fa_login($password);
-  }
-  if ($authorization['_'] === 'account.needSignup') {
-    echo $strings['ask_name'];
-    $name = trim(fgets(STDIN));
-    if ($name == '') $name = trim(fgets(STDIN));
-    if ($name == '') $name = 'TGUserbot';
-    $authorization = $MadelineProto->complete_signup($name, '');
+  $phoneNumber = trim(fgets(STDIN));
+  if (strtolower($phoneNumber) === 'bot') {
+    echo $strings['ask_bot_token'];
+    $MadelineProto->bot_login(trim(fgets(STDIN)));
+  } else {
+    $sentCode = $MadelineProto->phone_login($phoneNumber);
+    echo $strings['ask_login_code'];
+    $code = trim(fgets(STDIN, (isset($sentCode['type']['length']) ? $sentCode['type']['length'] : 5) + 1));
+    $authorization = $MadelineProto->complete_phone_login($code);
+    if ($authorization['_'] === 'account.password') {
+      echo $strings['ask_2fa_password'];
+      $password = trim(fgets(STDIN));
+      if ($password == '') $password = trim(fgets(STDIN));
+      $authorization = $MadelineProto->complete_2fa_login($password);
+    }
+    if ($authorization['_'] === 'account.needSignup') {
+      echo $strings['ask_name'];
+      $name = trim(fgets(STDIN));
+      if ($name == '') $name = trim(fgets(STDIN));
+      if ($name == '') $name = 'TGUserbot';
+      $authorization = $MadelineProto->complete_signup($name, '');
+    }
   }
   $MadelineProto->session = $settings['session'];
   $MadelineProto->serialize($settings['session']);
@@ -139,6 +144,7 @@ if (!file_exists($settings['session'])) {
   $MadelineProto = new \danog\MadelineProto\API($settings['session']);
   echo $strings['loaded'].PHP_EOL;
 }
+if (isset($MPsettings) and is_array($MPsettings)) $MadelineProto->settings = $MPsettings;
 echo $strings['session_loaded'].PHP_EOL;
 if ($settings['plugins']) {
   foreach ($plugins as $plugin) {
@@ -242,7 +248,7 @@ while (true) {
         }
       } else {
         if (isset($update['update']['message'])) {
-          $info['to'] = $MadelineProto->get_info($update['update']['message']['to_id']);
+          if (isset($update['update']['message']['to_id'])) $info['to'] = $MadelineProto->get_info($update['update']['message']['to_id']);
           if (isset($info['to']['bot_api_id'])) $chatID = $info['to']['bot_api_id'];
           if (isset($info['to']['type'])) $type = $info['to']['type'];
           if (isset($userID)) $info['from'] = $MadelineProto->get_info($userID);
