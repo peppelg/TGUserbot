@@ -4,6 +4,7 @@
   "loading": "Sto caricando MadelineProto...",
   "loaded": "MadelineProto caricato!",
   "ask_phone_number": "Inserisci il numero di telefono: ",
+  "ask_bot_token": "Inserisci il token del bot: ",
   "ask_login_code": "Inserisci il codice ricevuto: ",
   "ask_2fa_password": "Inserisci la password della verifica in due passaggi: ",
   "ask_name": "Inserisci il nome: ",
