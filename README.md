@@ -39,7 +39,6 @@ Avvio in background:
 
 	php start.php background
 
-
 Aggiornare la base
 ------------------
 	php start.php update
@@ -108,6 +107,11 @@ Plugin
 Per installare un plugin crea una cartella chiamata `plugins` e butttaci dentro i plugin. Facile eh?
 
 [Scarica un plugin di esempio](https://peppelg.github.io/tguserbotPlugin_memoryusage.php)
+
+
+Creare un bot (non userbot) con TGUserbot
+------------------------------------------
+Avvia accountmanager.php, vai su Aggiungi account e scrivi il nome della sessione. Quando TGUserbot chiederà il numero di telefono, scrivi `bot` e poi il token del bot.
 
 Supporto
 --------
