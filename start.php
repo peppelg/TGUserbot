@@ -57,13 +57,7 @@ if ($settings['auto_updates']) {
 echo $strings['loading'].PHP_EOL;
 require('vendor/autoload.php');
 include('functions.php');
-if ($settings['multithread']) {
-  if (function_exists('pcntl_fork')) {
-    $settings['auto_reboot'] = false;
-  } else {
-    $settings['multithread'] = false;
-  }
-}
+if ($settings['multithread'] and !function_exists('pcntl_fork')) $settings['multithread'] = false; 
 if ($settings['auto_reboot'] and function_exists('pcntl_exec')) {
   register_shutdown_function(function () {
     global $settings;
@@ -302,7 +296,7 @@ while (true) {
               } catch(Exception $e) { }
             }
           }
-          exit;
+          posix_kill(posix_getpid(), SIGTERM);
         }
       } else {
         try {
