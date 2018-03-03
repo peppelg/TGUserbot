@@ -39,12 +39,6 @@ if (isset($argv[1]) and $argv[1]) {
   }
   $settings['session'] = $argv[1];
 }
-if ($settings['auto_reboot'] and function_exists('pcntl_exec')) {
-  register_shutdown_function(function () {
-    global $settings;
-    pcntl_exec($_SERVER['_'], array('start.php', $settings['session']));
-  });
-}
 if ($settings['auto_updates']) {
   echo $strings['checking_updates'];
   if (trim(exec('git ls-remote git://github.com/peppelg/TGUserbot.git refs/heads/master | cut -f 1')) !== trim(file_get_contents('.git/refs/heads/master'))) {
@@ -69,6 +63,12 @@ if ($settings['multithread']) {
   } else {
     $settings['multithread'] = false;
   }
+}
+if ($settings['auto_reboot'] and function_exists('pcntl_exec')) {
+  register_shutdown_function(function () {
+    global $settings;
+    pcntl_exec($_SERVER['_'], array('start.php', $settings['session']));
+  });
 }
 if (file_exists('plugins') and is_dir('plugins')) {
   $settings['plugins'] = true;
