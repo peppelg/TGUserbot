@@ -7,7 +7,6 @@ if (isset($settings) and is_array($settings)) $settings = array_merge($settings_
 $strings = @json_decode(file_get_contents('strings_'.$settings['language'].'.json'), 1);
 if (!file_exists('sessions')) mkdir('sessions');
 if (!isset($settings['multithread'])) $settings['multithread'] = 0;
-if ($settings['multithread'] and function_exists('pcntl_fork') == 0) $settings['multithread'] = 0;
 if (!is_array($strings)) {
   if (!file_exists('strings_it.json')) {
     echo 'downloading strings_it.json...'.PHP_EOL;
@@ -65,17 +64,10 @@ echo $strings['loading'].PHP_EOL;
 require('vendor/autoload.php');
 include('functions.php');
 if ($settings['multithread']) {
-  $m = readline($strings['shitty_multithread_warning']);
-  if ($m != 'y') exit;
-  if (file_exists('SimpleProcess.phar')) require('SimpleProcess.phar');
-  else {
-    copy('https://peppelg.github.io/SimpleProcess.phar', 'SimpleProcess.phar');
-    if (file_exists('SimpleProcess.phar')) require('SimpleProcess.phar');
-    else $settings['multithread'] = false;
-  }
-  if ($settings['multithread']) {
-    declare(ticks=1);
-    $manager = new SimpleProcess\ProcessManager();
+  if (function_exists('pcntl_fork')) {
+    $settings['auto_reboot'] = false;
+  } else {
+    $settings['multithread'] = false;
   }
 }
 if (file_exists('plugins') and is_dir('plugins')) {
@@ -294,23 +286,24 @@ while (true) {
           $plugin->onUpdate();
         }
       }
-      if ($settings['multithread'] and isset($msg) and isset($userID) and isset($msgid) and isset($info) and isset($chatID) and isset($type)) {
-        $manager->fork(new SimpleProcess\Process(function() {
-          global $MadelineProto;
-          global $settings;
-          global $update;
-          global $msg;
-          global $userID;
-          global $msgid;
-          global $info;
-          global $chatID;
-          global $name;
-          global $username;
-          global $title;
-          global $usernamechat;
-          $MadelineProto->reset_session();
-          require('bot.php');
-        }, 'TGUserbot'));
+      if ($settings['multithread']) {
+        $pid = pcntl_fork();
+        if ($pid == -1) {
+          die('could not fork');
+        } else if ($pid) {
+        } else {
+          try {
+            require('bot.php');
+          } catch(Exception $e) {
+            echo $strings['error'].$e.PHP_EOL;
+            if (isset($chatID) and $settings['send_errors']) {
+              try {
+                $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
+              } catch(Exception $e) { }
+            }
+          }
+          exit;
+        }
       } else {
         try {
           require('bot.php');
