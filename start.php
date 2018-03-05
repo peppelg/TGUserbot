@@ -27,12 +27,15 @@ if (isset($argv[1]) and $argv[1]) {
   }
   if ($argv[1] == 'update') {
     echo PHP_EOL.$strings['updating'].PHP_EOL;
-    $bot = file_get_contents('bot.php');
-    $settings = file_get_contents('settings.php');
+    if(!rename('bot.php', 'bot.php_')) die('Error');
+    rename('settings.php', 'settings.php_');
+    rename('functions.php', 'functions.php_');
     shell_exec('git reset --hard HEAD');
     shell_exec('git pull');
-    file_put_contents('bot.php', $bot);
-    file_put_contents('settings.php', $settings);
+    sleep(0.5);
+    rename('bot.php_', 'bot.php');
+    rename('settings.php_', 'settings.php');
+    rename('functions.php_', 'functions.php');
     passthru('composer update');
     echo PHP_EOL.$strings['done'].PHP_EOL;
     exit;
