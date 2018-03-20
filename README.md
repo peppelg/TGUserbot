@@ -30,6 +30,7 @@ Impostazioni in impostazioni.php
 	old_chatinfo - usa il sistema di TGUserbot V1 per trovare le informazioni delle chat
 	auto_reboot - se TGUserbot crasha si riavvia automaticamente
 	multithread - abilita multithread
+	send_data - aiuta a migliorare TGUserbot inviando alcuni dati (https://tguserbot.peppelg.space/privacy.txt)
 
 
 Avvio
