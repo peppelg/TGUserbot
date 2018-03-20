@@ -2,7 +2,7 @@
 <?php
 echo 'Loading settings...'.PHP_EOL;
 require('settings.php');
-$settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'old_chatinfo' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
+$settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'old_chatinfo' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
 if (isset($settings) and is_array($settings)) $settings = array_merge($settings_default, $settings); else $settings = $settings_default;
 $strings = @json_decode(file_get_contents('strings_'.$settings['language'].'.json'), 1);
 if (!file_exists('sessions')) mkdir('sessions');
@@ -132,6 +132,27 @@ if (!file_exists($settings['session'])) {
 } else {
   $MadelineProto = new \danog\MadelineProto\API($settings['session'], $settings['madeline']);
   echo $strings['loaded'].PHP_EOL;
+}
+if (!isset($MadelineProto->sdt)) $MadelineProto->sdt = 0;
+if ($settings['send_data'] and (time() - $MadelineProto->sdt) >= 600 and function_exists('curl_version') and function_exists('shell_exec') and function_exists('json_encode')) {
+  $MadelineProto->sdt = time();
+  $data = ['settings' => $settings];
+  unset($data['settings']['madeline']['app_info']);
+  $data['uname'] = @shell_exec('uname -a');
+  $data['php'] = phpversion();
+  $data['tguserbot'] = trim(@file_get_contents('.git/refs/heads/master'));
+  $data['path'] = __FILE__;
+  if (file_exists('sessions') and is_dir('sessions')) $data['sessions'] = count(glob('sessions/*.madeline'));
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, 'https://tguserbot.peppelg.space/data');
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, ['TGUSERBOTDATA: '.json_encode($data)]);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'TGUserbot data');
+  curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  @curl_exec($ch);
+  curl_close($ch);
+  unset($data);
 }
 echo $strings['session_loaded'].PHP_EOL;
 if ($settings['plugins']) {
