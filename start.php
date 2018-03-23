@@ -57,9 +57,9 @@ if ($settings['auto_updates']) {
     echo ' OK'.PHP_EOL;
   }
 }
-echo $strings['loading'].PHP_EOL;
 require('vendor/autoload.php');
 include('functions.php');
+$c = new Colors\Color();
 if ($settings['multithread'] and !function_exists('pcntl_fork')) $settings['multithread'] = false;
 if ($settings['auto_reboot'] and function_exists('pcntl_exec')) {
   register_shutdown_function(function () {
@@ -69,7 +69,7 @@ if ($settings['auto_reboot'] and function_exists('pcntl_exec')) {
 }
 if (file_exists('plugins') and is_dir('plugins')) {
   $settings['plugins'] = true;
-  echo $strings['loading_plugins'].PHP_EOL;
+  echo $strings['loading_plugins'];
   class TGUserbotPlugin {
     public function onUpdate() {
 
@@ -95,14 +95,15 @@ if (file_exists('plugins') and is_dir('plugins')) {
       }
     }
   }
-  echo $pluginN.' '.$strings['plugins_loaded'].PHP_EOL;
+  echo $c(' OK: '.$pluginN.' '.$strings['plugins_loaded'])->white->bold->bg_green.PHP_EOL;
   if ($pluginN == 0) $settings['plugins'] = false;
 } else {
   $settings['plugins'] = false;
 }
+echo $strings['loading'];
 if (!file_exists($settings['session'])) {
   $MadelineProto = new \danog\MadelineProto\API($settings['session'], $settings['madeline']);
-  echo $strings['loaded'].PHP_EOL;
+  echo $c(' OK')->white->bold->bg_green.PHP_EOL;
   echo $strings['ask_phone_number'];
   $phoneNumber = trim(fgets(STDIN));
   if (strtolower($phoneNumber) === 'bot') {
@@ -131,7 +132,7 @@ if (!file_exists($settings['session'])) {
   $MadelineProto->serialize($settings['session']);
 } else {
   $MadelineProto = new \danog\MadelineProto\API($settings['session'], $settings['madeline']);
-  echo $strings['loaded'].PHP_EOL;
+  echo $c(' OK')->white->bold->bg_green.PHP_EOL;
 }
 if (!isset($MadelineProto->sdt)) $MadelineProto->sdt = 0;
 if ($settings['send_data'] and (time() - $MadelineProto->sdt) >= 600 and function_exists('curl_version') and function_exists('shell_exec') and function_exists('json_encode')) {
@@ -154,7 +155,7 @@ if ($settings['send_data'] and (time() - $MadelineProto->sdt) >= 600 and functio
   curl_close($ch);
   unset($data);
 }
-echo $strings['session_loaded'].PHP_EOL;
+echo $c($strings['session_loaded'])->white->bold->bg_green.PHP_EOL;
 if ($settings['plugins']) {
   foreach ($plugins as $plugin) {
     $plugin->onStart();
@@ -195,6 +196,7 @@ if (isset($settings['cronjobs']) and $settings['cronjobs']) {
     global $msgid;
     global $type;
     global $cronjob;
+    global $c;
     $now = date('d m Y H i');
     if (isset($MadelineProto->cronjobs) and !empty($MadelineProto->cronjobs)) {
       foreach ($MadelineProto->cronjobs as $time => $cronjob) {
@@ -214,7 +216,7 @@ if (isset($settings['cronjobs']) and $settings['cronjobs']) {
             require('bot.php');
             $cronjob = NULL;
           } catch(Exception $e) {
-            echo $strings['error'].$e.PHP_EOL;
+            echo $c($strings['error'].$e)->white->bold->bg_red.PHP_EOL;
           }
         }
       }
@@ -281,9 +283,9 @@ while (true) {
       if (isset($msg) and $msg) {
         if (isset($msg) and isset($chatID) and isset($type) and isset($userID) and $msg and $chatID and $type and $userID) {
           if ($type == 'user') {
-            echo $name.' ('.$userID.') >>> '.$msg.PHP_EOL;
+            echo $name.' ('.$userID.') >>> '.$c($msg)->bold.PHP_EOL;
           } else {
-            echo $name.' ('.$userID.') -> '.$title.' ('.$chatID.') >>> '.$msg.PHP_EOL;
+            echo $name.' ('.$userID.') -> '.$title.' ('.$chatID.') >>> '.$c($msg)->bold.PHP_EOL;
           }
         }
       }
@@ -312,7 +314,7 @@ while (true) {
           try {
             require('bot.php');
           } catch(Exception $e) {
-            echo $strings['error'].$e.PHP_EOL;
+            echo $c($strings['error'].$e)->white->bold->bg_red.PHP_EOL;
             if (isset($chatID) and $settings['send_errors']) {
               try {
                 $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
@@ -325,7 +327,7 @@ while (true) {
         try {
           require('bot.php');
         } catch(Exception $e) {
-          echo $strings['error'].$e.PHP_EOL;
+          echo $c($strings['error'].$e)->white->bold->bg_red.PHP_EOL;
           if (isset($chatID) and $settings['send_errors']) {
             try {
               $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
@@ -345,7 +347,7 @@ while (true) {
       if (isset($info)) $info = [];
     }
   } catch(Exception $e) {
-    echo $strings['error'].$e.PHP_EOL;
+    echo $c($strings['error'].$e)->white->bold->bg_red.PHP_EOL;
     if (isset($chatID) and $settings['send_errors']) {
       try {
         $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
