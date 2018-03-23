@@ -101,7 +101,7 @@ if (file_exists('plugins') and is_dir('plugins')) {
   $settings['plugins'] = false;
 }
 if (!file_exists($settings['session'])) {
-  $MadelineProto = new \danog\MadelineProto\API($settings['madeline']);
+  $MadelineProto = new \danog\MadelineProto\API($settings['session'], $settings['madeline']);
   echo $strings['loaded'].PHP_EOL;
   echo $strings['ask_phone_number'];
   $phoneNumber = trim(fgets(STDIN));
