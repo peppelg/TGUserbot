@@ -12,6 +12,7 @@
     ],
     "require": {
         "danog/madelineproto": "dev-master",
-        "php-school/cli-menu": "dev-master"
+        "php-school/cli-menu": "dev-master",
+        "kevinlebrun/colors.php": "dev-master"
     }
 }
