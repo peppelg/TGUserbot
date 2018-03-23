@@ -2,7 +2,6 @@
   "loading_plugins": "Sto caricando i plugin...",
   "plugins_loaded": "plugin caricati!",
   "loading": "Sto caricando MadelineProto...",
-  "loaded": "MadelineProto caricato!",
   "ask_phone_number": "Inserisci il numero di telefono: ",
   "ask_bot_token": "Inserisci il token del bot: ",
   "ask_login_code": "Inserisci il codice ricevuto: ",
