@@ -2,7 +2,7 @@
 <?php
 echo 'Loading settings...'.PHP_EOL;
 require('settings.php');
-$settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'old_chatinfo' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
+$settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'old_chatinfo' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 2, 'logger_param' => 'MadelineBroto.log'], 'updates' => ['handle_old_updates' => 0]]];
 if (isset($settings) and is_array($settings)) $settings = array_merge($settings_default, $settings); else $settings = $settings_default;
 $strings = @json_decode(file_get_contents('strings_'.$settings['language'].'.json'), 1);
 if (!file_exists('sessions')) mkdir('sessions');
