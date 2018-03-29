@@ -60,10 +60,13 @@ Variabili
 	$msg - messaggio
 	$chatID - id della chat
 	$userID - id utente
+	$msgid - id del messaggio
+	$type - user, bot, group, supergroup, channel
 	$name - nome dell'utente
 	$username - username dell'utente
 	$title - titolo della chat
 	$chatusername - username della chat
+	$info - altre informazioni
 	$cronjob - id cronjob 
 	
 	
@@ -73,7 +76,7 @@ Funzioni
 	
 [Metodi MadelineProto](https://docs.madelineproto.xyz/API_docs/methods/)
 	
-Cronjobs (farzi)
+Cronjobs
 ---------
 Crea un nuovo cronjob (tra un minuto):
 
