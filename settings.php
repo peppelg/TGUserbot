@@ -7,5 +7,6 @@ $settings = [
   'readmsg' => true,
   'always_online' => false,
   'auto_reboot' => true,
-  'multithread' => false
+  'multithread' => false,
+  'cli' => true
 ];

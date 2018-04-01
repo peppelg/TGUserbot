@@ -19,7 +19,7 @@ class TGUserbot {
   public $me = NULL;
   public function __construct() {
     require_once('settings.php');
-    $settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'plugins_dir' => 'plugins', 'plugins' => false, 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
+    $settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'plugins_dir' => 'plugins', 'plugins' => false, 'cli' => true, 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
     if (isset($settings) and is_array($settings)) $settings = array_merge($settings_default, $settings); else $settings = $settings_default;
     if ($settings['multithread'] and !function_exists('pcntl_fork')) $settings['multithread'] = false;
     if (isset($GLOBALS['argv'][1]) and $GLOBALS['argv'][1] != 'background') $settings['session'] = $GLOBALS['argv'][1];
@@ -177,6 +177,7 @@ class TGUserbot {
         $plugin->onStart();
       }
     }
+    if ($this->settings['cli']) $this->MadelineCli();
     $MadelineProto->setEventHandler('\TGUserbotEventHandler');
     echo $GLOBALS['c']($this->strings['session_loaded'])->white->bold->bg_green.PHP_EOL;
     if ($this->settings['multithread']) $MadelineProto->loop(-1); else $MadelineProto->loop();
@@ -250,6 +251,44 @@ class TGUserbot {
       try {
         $MadelineProto->messages->sendMessage(['peer' => $update['chatID'], 'message' => '<b>'.$this->strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
       } catch(Exception $e) { }
+    }
+  }
+  public function MadelineCli() {
+    if (function_exists('pcntl_fork') and function_exists('posix_getpgid')) {
+      global $MadelineProto;
+      $pid = pcntl_fork();
+      if ($pid == -1) {
+        die('could not fork');
+      } else if ($pid) {
+      } else {
+        while(true) {
+          $command = explode(' ', fgets(STDIN), 2);
+          if (posix_getpgid(PID) == false) exit;
+          if (!isset($command[1])) $command[1] = '{}';
+          $command[0] = trim($command[0]);
+          if (isset($command[0]) and $command[0]) {
+            $r = json_decode($command[1], true);
+            $method = explode('.', $command[0], 2);
+            if (isset($method[0]) and isset($method[1])) {
+              try {
+                $response = $MadelineProto->{$method[0]}->{$method[1]}($r);
+              } catch (Exception $e) {
+                $this->error($e);
+              }
+            } elseif(isset($method[0])) {
+              try {
+                $response = $MadelineProto->{$method[0]}($r);
+              } catch (Exception $e) {
+                $this->error($e);
+              }
+            }
+            if (isset($response)) {
+              echo json_encode($response, JSON_PRETTY_PRINT).PHP_EOL;
+              unset($response);
+            }
+          }
+        }
+      }
     }
   }
 }
