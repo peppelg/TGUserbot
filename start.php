@@ -95,7 +95,7 @@ class TGUserbot {
         echo $this->strings['updating'].PHP_EOL;
         $this->update();
         echo PHP_EOL.PHP_EOL.$this->strings['rebooting'].PHP_EOL.PHP_EOL;
-        passthru('php '.escapeshellarg(__FILE__).' '.$this->settings['sessions']);
+        passthru('php '.escapeshellarg(__FILE__).' '.$this->settings['session']);
         exit;
       } else {
         echo ' '.$GLOBALS['c']('OK')->white->bold->bg_green.PHP_EOL;

@@ -25,5 +25,6 @@
   "go_back": "Torna indietro",
   "exit": "Esci",
   "checking_updates": "Controllo nuovi aggiornamenti...",
-  "new_update": "Nuovo aggiornamento disponibile! Tra 10 secondi aggiornerò TGUserbot. Premi CTRL+C per annullare."
+  "new_update": "Nuovo aggiornamento disponibile! Tra 10 secondi aggiornerò TGUserbot. Premi CTRL+C per annullare.",
+  "rebooting": "Riavvio in corso..."
 }
