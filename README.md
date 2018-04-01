@@ -27,7 +27,6 @@ Impostazioni in impostazioni.php
 	send_errors - invia errori in chat
 	readmsg - legge i messaggi in chat privata
 	always_online - mantiene lo stato in linea
-	old_chatinfo - usa il sistema di TGUserbot V1 per trovare le informazioni delle chat
 	auto_reboot - se TGUserbot crasha si riavvia automaticamente
 	multithread - abilita multithread
 	send_data - aiuta a migliorare TGUserbot inviando alcuni dati (https://tguserbot.peppelg.space/privacy.txt)
@@ -67,40 +66,40 @@ Variabili
 	$title - titolo della chat
 	$chatusername - username della chat
 	$info - altre informazioni
-	$cronjob - id cronjob 
-	
-	
+	$cronjob - id cronjob
+
+
 Funzioni
 
 	sm(Chat, Message, Reply, ParseMode);
-	
+
 [Metodi MadelineProto](https://docs.madelineproto.xyz/API_docs/methods/)
-	
+
 Cronjobs
 ---------
 Crea un nuovo cronjob (tra un minuto):
 
-	cronjobAdd('next minute', 'cronjobid');
+	$cron->add('next minute', 'cronjobid');
 	//oppure
-	cronjobAdd(time()+60, 'cronjobid');
+	$cron->add(time()+60, 'cronjobid');
 
 Cancella un cronjob:
 
-	cronjobDel('cronjobid');
+	$cron->delete('cronjobid');
 
 Cancella tutti i cronjob:
 
-	cronjobReset();
-	
+	$cron->delete();
+
 Quando sarà il momento, verrà dichiarata la variabile `$cronjob`, potrai gestire tutto da bot.php.
 
 Esempio (bot.php):
 
 	if ($msg == 'Invia tra un minuto un messaggio a 🅱️eppe') {
-	  cronjobAdd('next minute', 'messaggio a peppe');
+	  $cron->add('next minute', 'messaggio a peppe');
 	  sm($chatID, 'Ok! Tra un minuto invierò un messaggio a Peppe');
 	}
-	if (isset($cronjob) and $cronjob == 'messaggio a peppe') {
+	if ($cronjob == 'messaggio a peppe') {
 	  sm('@peppelg1', 'Zao, kome stai¿¿');
 	}
 
@@ -108,7 +107,7 @@ Esempio (bot.php):
 
 Plugin
 -------
-Per installare un plugin crea una cartella chiamata `plugins` e butttaci dentro i plugin. Facile eh?
+Per installare un plugin crea una cartella chiamata `plugins` e metti dentro i plugin. Facile eh?
 
 [Scarica un plugin di esempio](https://peppelg.github.io/tguserbotPlugin_memoryusage.php)
 

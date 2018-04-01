@@ -1,32 +1,79 @@
 #!/usr/bin/php
 <?php
-echo 'Loading settings...'.PHP_EOL;
-require('settings.php');
-$settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'old_chatinfo' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
-if (isset($settings) and is_array($settings)) $settings = array_merge($settings_default, $settings); else $settings = $settings_default;
-$strings = @json_decode(file_get_contents('strings_'.$settings['language'].'.json'), 1);
-if (!file_exists('sessions')) mkdir('sessions');
-if (!isset($settings['multithread'])) $settings['multithread'] = 0;
-if (!is_array($strings)) {
-  if (!file_exists('strings_it.json')) {
-    echo 'downloading strings_it.json...'.PHP_EOL;
-    file_put_contents('strings_it.json', file_get_contents('https://raw.githubusercontent.com/peppelg/TGUserbot/master/strings_it.json'));
-  }
-  $strings = json_decode(file_get_contents('strings_it.json'), 1);
+define('PID', getmypid());
+chdir(__DIR__);
+require_once('vendor/autoload.php');
+include_once('functions.php');
+$c = new Colors\Color();
+$MadelineProto = NULL;
+$update = NULL;
+class TGUserbotPlugin {
+  public function onUpdate($update) { }
+  public function onStart() { }
 }
-if (isset($argv[1]) and $argv[1]) {
-  if ($argv[1] == 'background') {
-    shell_exec('screen -d -m php start.php');
-    echo PHP_EOL.$strings['background'].PHP_EOL;
-    exit;
+
+class TGUserbot {
+  public $settings = NULL;
+  protected $plugins = NULL;
+  public $strings = NULL;
+  public $me = NULL;
+  public function __construct() {
+    require_once('settings.php');
+    $settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'plugins_dir' => 'plugins','madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
+    if (isset($settings) and is_array($settings)) $settings = array_merge($settings_default, $settings); else $settings = $settings_default;
+    if ($settings['multithread'] and !function_exists('pcntl_fork')) $settings['multithread'] = false;
+    if (isset($GLOBALS['argv'][1]) and $GLOBALS['argv'][1] != 'background') $settings['session'] = $GLOBALS['argv'][1];
+    $strings = @json_decode(file_get_contents('strings_'.$settings['language'].'.json'), 1);
+    if (!file_exists('sessions')) mkdir('sessions');
+    if (!isset($settings['multithread'])) $settings['multithread'] = 0;
+    if (!is_array($strings)) {
+      if (!file_exists('strings_it.json')) {
+        echo 'downloading strings_it.json...'.PHP_EOL;
+        file_put_contents('strings_it.json', file_get_contents('https://raw.githubusercontent.com/peppelg/TGUserbot/master/strings_it.json'));
+      }
+      $strings = json_decode(file_get_contents('strings_it.json'), 1);
+    }
+    $this->settings = $settings;
+    $this->strings = $strings;
+    if (file_exists($this->settings['plugins_dir'])) {
+      echo $this->strings['loading_plugins'];
+      $pluginN = $this->load_plugins($this->settings['plugins_dir']);
+      echo ' '.$GLOBALS['c']('OK: '.$pluginN.' '.$this->strings['plugins_loaded'])->white->bold->bg_green.PHP_EOL;
+    }
+    return true;
   }
-  if (isset($argv[2]) and $argv[2] == 'background') {
-    shell_exec('screen -d -m php start.php '.escapeshellarg($argv[1]));
-    echo PHP_EOL.$strings['background'].PHP_EOL;
-    exit;
+  private function load_plugins($dir = 'plugins') {
+    if (!file_exists($dir)) {
+      $this->settings['plugins'] = false;
+      return false;
+    }
+    $pluginslist = array_values(array_diff(scandir($dir), ['..', '.']));
+    $plugins = [];
+    $pluginN = 0;
+    foreach ($pluginslist as $plugin) {
+      if (substr($plugin, -4) == '.php') {
+        include($dir.'/'.$plugin);
+      }
+    }
+    foreach (get_declared_classes() as $class) {
+      if (is_subclass_of($class, 'TGUserbotPlugin')) {
+        $pluginN++;
+        $plugin = new $class();
+        if (method_exists($class, 'onStart')) {
+          $plugins[$class] = $plugin;
+        }
+      }
+    }
+    if ($pluginN == 0) {
+      $this->settings['plugins'] = false;
+      return false;
+    } else {
+      $this->settings['plugins'] = true;
+      $this->plugins = $plugins;
+      return $pluginN;
+    }
   }
-  if ($argv[1] == 'update') {
-    echo PHP_EOL.$strings['updating'].PHP_EOL;
+  public function update() {
     if(!rename('bot.php', 'bot.php_')) die('Error');
     rename('settings.php', 'settings.php_');
     rename('functions.php', 'functions.php_');
@@ -37,132 +84,194 @@ if (isset($argv[1]) and $argv[1]) {
     rename('settings.php_', 'settings.php');
     rename('functions.php_', 'functions.php');
     passthru('composer update');
-    echo PHP_EOL.$strings['done'].PHP_EOL;
-    exit;
   }
-  $settings['session'] = $argv[1];
-}
-if ($settings['auto_updates']) {
-  echo $strings['checking_updates'];
-  if (trim(exec('git ls-remote git://github.com/peppelg/TGUserbot.git refs/heads/master | cut -f 1')) !== trim(file_get_contents('.git/refs/heads/master'))) {
-    echo ' OK'.PHP_EOL;
-    echo $strings['new_update'].PHP_EOL;
-    sleep(10);
-    echo 'Aggiornamento in corso...'.PHP_EOL;
-    passthru('php start.php update');
-    echo PHP_EOL.PHP_EOL.'Riavvio...'.PHP_EOL.PHP_EOL;
-    pcntl_exec($_SERVER['_'], array('start.php', $settings['session']));
-    exit;
-  } else {
-    echo ' OK'.PHP_EOL;
-  }
-}
-require('vendor/autoload.php');
-include('functions.php');
-$c = new Colors\Color();
-if ($settings['multithread'] and !function_exists('pcntl_fork')) $settings['multithread'] = false;
-if ($settings['auto_reboot'] and function_exists('pcntl_exec')) {
-  register_shutdown_function(function () {
-    global $settings;
-    pcntl_exec($_SERVER['_'], array('start.php', $settings['session']));
-  });
-}
-if (file_exists('plugins') and is_dir('plugins')) {
-  $settings['plugins'] = true;
-  echo $strings['loading_plugins'];
-  class TGUserbotPlugin {
-    public function onUpdate() {
-
-    }
-    public function onStart() {
-
-    }
-  }
-  $pluginslist = array_values(array_diff(scandir('plugins'), ['..', '.']));
-  $plugins = [];
-  $pluginN = 0;
-  foreach ($pluginslist as $plugin) {
-    if (substr($plugin, -4) == '.php') {
-      include('plugins/'.$plugin);
-    }
-  }
-  foreach (get_declared_classes() as $class) {
-    if (is_subclass_of($class, 'TGUserbotPlugin')) {
-      $pluginN++;
-      $plugin = new $class();
-      if (method_exists($class, 'onStart')) {
-        $plugins[$class] = $plugin;
+  public function check_updates() {
+    if ($this->settings['auto_updates']) {
+      echo $this->strings['checking_updates'];
+      if (trim(exec('git ls-remote git://github.com/peppelg/TGUserbot.git refs/heads/master | cut -f 1')) !== trim(file_get_contents('.git/refs/heads/master'))) {
+        echo ' '.$GLOBALS['c']('OK')->white->bold->bg_green.PHP_EOL;
+        echo $this->strings['new_update'].PHP_EOL;
+        sleep(10);
+        echo $this->strings['updating'].PHP_EOL;
+        $this->update();
+        echo PHP_EOL.PHP_EOL.$this->strings['rebooting'].PHP_EOL.PHP_EOL;
+        passthru('php '.escapeshellarg(__FILE__).' '.$this->settings['sessions']);
+        exit;
+      } else {
+        echo ' '.$GLOBALS['c']('OK')->white->bold->bg_green.PHP_EOL;
       }
     }
   }
-  echo $c(' OK: '.$pluginN.' '.$strings['plugins_loaded'])->white->bold->bg_green.PHP_EOL;
-  if ($pluginN == 0) $settings['plugins'] = false;
-} else {
-  $settings['plugins'] = false;
-}
-echo $strings['loading'];
-if (!file_exists($settings['session'])) {
-  $MadelineProto = new \danog\MadelineProto\API($settings['session'], $settings['madeline']);
-  echo $c(' OK')->white->bold->bg_green.PHP_EOL;
-  echo $strings['ask_phone_number'];
-  $phoneNumber = trim(fgets(STDIN));
-  if (strtolower($phoneNumber) === 'bot') {
-    echo $strings['ask_bot_token'];
-    $MadelineProto->bot_login(trim(fgets(STDIN)));
-  } else {
-    $sentCode = $MadelineProto->phone_login($phoneNumber);
-    echo $strings['ask_login_code'];
-    $code = trim(fgets(STDIN, (isset($sentCode['type']['length']) ? $sentCode['type']['length'] : 5) + 1));
-    $authorization = $MadelineProto->complete_phone_login($code);
-    if ($authorization['_'] === 'account.password') {
-      echo $strings['ask_2fa_password'];
-      $password = trim(fgets(STDIN));
-      if ($password == '') $password = trim(fgets(STDIN));
-      $authorization = $MadelineProto->complete_2fa_login($password);
+  public function sbackground() {
+    shell_exec('screen -d -m php '.escapeshellarg(__FILE__).' '.$this->settings['session']);
+    echo PHP_EOL.$this->strings['background'].PHP_EOL;
+    exit;
+  }
+  public function start() {
+    global $MadelineProto;
+    $MadelineProto = new \danog\MadelineProto\API($this->settings['session'], $this->settings['madeline']);
+    echo ' '.$GLOBALS['c']('OK')->white->bold->bg_green.PHP_EOL;
+    try {
+      $me = $MadelineProto->get_self();
+    } catch (Exception $e) {
+      $me = false;
     }
-    if ($authorization['_'] === 'account.needSignup') {
-      echo $strings['ask_name'];
-      $name = trim(fgets(STDIN));
-      if ($name == '') $name = trim(fgets(STDIN));
-      if ($name == '') $name = 'TGUserbot';
-      $authorization = $MadelineProto->complete_signup($name, '');
+    if ($me === false) {
+      echo $this->strings['ask_phone_number'];
+      $phoneNumber = trim(fgets(STDIN));
+      if (strtolower($phoneNumber) === 'bot') {
+        echo $this->strings['ask_bot_token'];
+        $MadelineProto->bot_login(trim(fgets(STDIN)));
+      } else {
+        $sentCode = $MadelineProto->phone_login($phoneNumber);
+        echo $this->strings['ask_login_code'];
+        $code = trim(fgets(STDIN, (isset($sentCode['type']['length']) ? $sentCode['type']['length'] : 5) + 1));
+        $authorization = $MadelineProto->complete_phone_login($code);
+        if ($authorization['_'] === 'account.password') {
+          echo $this->strings['ask_2fa_password'];
+          $password = trim(fgets(STDIN));
+          if ($password == '') $password = trim(fgets(STDIN));
+          $authorization = $MadelineProto->complete_2fa_login($password);
+        }
+        if ($authorization['_'] === 'account.needSignup') {
+          echo $this->strings['ask_name'];
+          $name = trim(fgets(STDIN));
+          if ($name == '') $name = trim(fgets(STDIN));
+          if ($name == '') $name = 'TGUserbot';
+          $authorization = $MadelineProto->complete_signup($name, '');
+        }
+      }
+      $MadelineProto->session = $this->settings['session'];
+      $MadelineProto->serialize($this->settings['session']);
+      $me = $MadelineProto->get_self();
+    }
+    $this->me = $me;
+    if (!isset($MadelineProto->sdt)) $MadelineProto->sdt = 0;
+    if ($this->settings['send_data'] and (time() - $MadelineProto->sdt) >= 600 and function_exists('curl_version') and function_exists('shell_exec') and function_exists('json_encode')) {
+      $MadelineProto->sdt = time();
+      $data = ['settings' => $this->settings];
+      unset($data['settings']['madeline']['app_info']);
+      $data['uname'] = @shell_exec('uname -a');
+      $data['php'] = phpversion();
+      $data['tguserbot'] = trim(@file_get_contents('.git/refs/heads/master'));
+      $data['path'] = __FILE__;
+      if (file_exists('sessions') and is_dir('sessions')) $data['sessions'] = count(glob('sessions/*.madeline'));
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, 'https://tguserbot.peppelg.space/data');
+      curl_setopt($ch, CURLOPT_POST, 1);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, ['TGUSERBOTDATA: '.json_encode($data)]);
+      curl_setopt($ch, CURLOPT_USERAGENT, 'TGUserbot data');
+      curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      @curl_exec($ch);
+      curl_close($ch);
+      unset($data);
+    }
+    if ($this->settings['auto_reboot'] and function_exists('pcntl_exec')) {
+      register_shutdown_function(function () {
+        if (PID === getmypid()) pcntl_exec($_SERVER['_'], [__FILE__, $GLOBALS['TGUserbot']->settings['session']]);
+      });
+    }
+    if ($this->settings['plugins']) {
+      foreach ($this->plugins as $plugin) {
+        $plugin->onStart();
+      }
+    }
+    $MadelineProto->setEventHandler('\TGUserbotEventHandler');
+    echo $GLOBALS['c']($this->strings['session_loaded'])->white->bold->bg_green.PHP_EOL;
+    if ($this->settings['multithread']) $MadelineProto->loop(-1); else $MadelineProto->loop();
+  }
+  public function parse_update($update) {
+    global $MadelineProto;
+    $result = ['chatID' => NULL, 'userID' => NULL, 'msgid' => NULL, 'type' => NULL, 'name' => NULL, 'username' => NULL, 'chatusername' => NULL, 'title' => NULL, 'msg' => NULL, 'cronjob' => NULL, 'info' => NULL, 'update' => $update];
+    try {
+      if (isset($update['message'])) {
+        if (isset($update['message']['from_id'])) $result['userID'] = $update['message']['from_id'];
+        if (isset($update['message']['id'])) $result['msgid'] = $update['message']['id'];
+        if (isset($update['message']['message'])) $result['msg'] = $update['message']['message'];
+        if (isset($update['message']['to_id'])) $result['info']['to'] = $MadelineProto->get_info($update['message']['to_id']);
+        if (isset($result['info']['to']['bot_api_id'])) $result['chatID'] = $result['info']['to']['bot_api_id'];
+        if (isset($result['info']['to']['type'])) $result['type'] = $result['info']['to']['type'];
+        if (isset($result['userID'])) $result['info']['from'] = $MadelineProto->get_info($result['userID']);
+        if (isset($result['info']['to']['User']['self']) and isset($result['userID']) and $result['info']['to']['User']['self']) $result['chatID'] = $result['userID'];
+        if (isset($result['type']) and $result['type'] == 'chat') $result['type'] = 'group';
+        if (isset($result['info']['from']['User']['first_name'])) $result['name'] = $result['info']['from']['User']['first_name'];
+        if (isset($result['info']['to']['Chat']['title'])) $result['title'] = $result['info']['to']['Chat']['title'];
+        if (isset($result['info']['from']['User']['username'])) $result['username'] = $result['info']['from']['User']['username'];
+        if (isset($result['info']['to']['Chat']['username'])) $result['chatusername'] = $result['info']['to']['Chat']['username'];
+      }
+    } catch (Exception $e) {
+      $this->error($e);
+    }
+    return $result;
+  }
+  public function mUpdate($TGupdate) {
+    global $MadelineProto;
+    global $cron;
+    global $update;
+    $update = $TGupdate;
+    try {
+      foreach ($update as $varname => $var) {
+        if ($varname !== 'update') $$varname = $var;
+      }
+      if (isset($msg) and isset($chatID) and isset($type) and isset($userID) and $msg) {
+        if ($type == 'user') {
+          echo $name.' ('.$userID.') >>> '.$GLOBALS['c']($msg)->bold.PHP_EOL;
+        } elseif ($type == 'cronjob') {
+          if (is_string($cronjob)) echo 'CRONJOB >>> '.$GLOBALS['c']($cronjob)->bold.PHP_EOL; else echo 'CRONJOB >>> *array*'.PHP_EOL;
+        } else {
+          echo $name.' ('.$userID.') -> '.$title.' ('.$chatID.') >>> '.$GLOBALS['c']($msg)->bold.PHP_EOL;
+        }
+      }
+      if ($this->settings['readmsg'] and isset($chatID) and isset($msgid) and $msgid and isset($type)) {
+        try {
+          if (in_array($type, ['user', 'bot', 'group'])) {
+            $MadelineProto->messages->readHistory(['peer' => $chatID, 'max_id' => $msgid]);
+          } elseif(in_array($type, ['channel', 'supergroup'])) {
+            $MadelineProto->channels->readHistory(['channel' => $chatID, 'max_id' => $msgid]);
+          }
+        } catch(Exception $e) { }
+      }
+      if ($this->settings['plugins']) {
+        foreach ($this->plugins as $plugin) {
+          $plugin->onUpdate($update);
+        }
+      }
+      include('bot.php');
+    } catch (Exception $e) {
+      $this->error($e);
     }
   }
-  $MadelineProto->session = $settings['session'];
-  $MadelineProto->serialize($settings['session']);
-} else {
-  $MadelineProto = new \danog\MadelineProto\API($settings['session'], $settings['madeline']);
-  echo $c(' OK')->white->bold->bg_green.PHP_EOL;
-}
-if (!isset($MadelineProto->sdt)) $MadelineProto->sdt = 0;
-if ($settings['send_data'] and (time() - $MadelineProto->sdt) >= 600 and function_exists('curl_version') and function_exists('shell_exec') and function_exists('json_encode')) {
-  $MadelineProto->sdt = time();
-  $data = ['settings' => $settings];
-  unset($data['settings']['madeline']['app_info']);
-  $data['uname'] = @shell_exec('uname -a');
-  $data['php'] = phpversion();
-  $data['tguserbot'] = trim(@file_get_contents('.git/refs/heads/master'));
-  $data['path'] = __FILE__;
-  if (file_exists('sessions') and is_dir('sessions')) $data['sessions'] = count(glob('sessions/*.madeline'));
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, 'https://tguserbot.peppelg.space/data');
-  curl_setopt($ch, CURLOPT_POST, 1);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, ['TGUSERBOTDATA: '.json_encode($data)]);
-  curl_setopt($ch, CURLOPT_USERAGENT, 'TGUserbot data');
-  curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  @curl_exec($ch);
-  curl_close($ch);
-  unset($data);
-}
-echo $c($strings['session_loaded'])->white->bold->bg_green.PHP_EOL;
-if ($settings['plugins']) {
-  foreach ($plugins as $plugin) {
-    $plugin->onStart();
+  public function error($e) {
+    global $update;
+    global $MadelineProto;
+    echo $GLOBALS['c']($this->strings['error'].$e)->white->bold->bg_red.PHP_EOL;
+    if (isset($update['chatID']) and $this->settings['send_errors']) {
+      try {
+        $MadelineProto->messages->sendMessage(['peer' => $update['chatID'], 'message' => '<b>'.$this->strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
+      } catch(Exception $e) { }
+    }
   }
 }
-if (isset($settings['cronjobs']) and $settings['cronjobs']) {
-  function cronjobAdd($time, $id) {
+
+class TGUserbotEventHandler extends \danog\MadelineProto\EventHandler {
+  public function onAny($update) {
+    $GLOBALS['TGUserbot']->mUpdate($GLOBALS['TGUserbot']->parse_update($update));
+  }
+  public function onLoop() {
+    $GLOBALS['cron']->run();
+    if ($GLOBALS['TGUserbot']->settings['always_online']) {
+      if (in_array(date('s'), [0, 30, 31])) {
+        try {
+          $this->account->updateStatus(['offline' => 0]);
+        } catch (Exception $e) { }
+      }
+    }
+  }
+}
+
+class TGUserbotCronjobs {
+  public function add($time, $id) {
     global $MadelineProto;
     if (!is_numeric($time) or strlen($time) !== 10) {
       $time = strtotime($time);
@@ -172,7 +281,7 @@ if (isset($settings['cronjobs']) and $settings['cronjobs']) {
     $MadelineProto->cronjobs[$time] = $id;
     return true;
   }
-  function cronjobDel($id) {
+  public function delete($id) {
     global $MadelineProto;
     $cronid = array_search($id, $MadelineProto->cronjobs);
     if ($cronid !== false) {
@@ -182,176 +291,35 @@ if (isset($settings['cronjobs']) and $settings['cronjobs']) {
       return false;
     }
   }
-  function cronjobReset() {
+  public function reset() {
     global $MadelineProto;
     $MadelineProto->cronjobs = [];
     return true;
   }
-  function cronrun() {
+  public function run() {
     global $MadelineProto;
-    global $settings;
-    global $strings;
-    global $plugins;
-    global $msg;
-    global $msgid;
-    global $type;
-    global $cronjob;
-    global $c;
     $now = date('d m Y H i');
     if (isset($MadelineProto->cronjobs) and !empty($MadelineProto->cronjobs)) {
       foreach ($MadelineProto->cronjobs as $time => $cronjob) {
         if (date('d m Y H i', $time) === $now) {
-          cronjobDel($cronjob);
-          if (is_string($cronjob)) echo 'CRONJOB >>> '.$cronjob.PHP_EOL;
-          else echo 'CRONJOB >>> *array*'.PHP_EOL;
-          $msg = 'cronjob';
-          $msgid = 'cronjob';
-          $type = 'cronjob';
-          if ($settings['plugins']) {
-            foreach ($plugins as $plugin) {
-              $plugin->onUpdate();
-            }
-          }
-          try {
-            require('bot.php');
-            $cronjob = NULL;
-          } catch(Exception $e) {
-            echo $c($strings['error'].$e)->white->bold->bg_red.PHP_EOL;
-          }
+          $this->delete($cronjob);
+          $GLOBALS['TGUserbot']->mUpdate(['chatID' => 'cronjob', 'userID' => 'cronjob', 'msgid' => 'cronjob', 'type' => 'cronjob', 'name' => NULL, 'username' => NULL, 'chatusername' => NULL, 'title' => NULL, 'msg' => 'cronjob', 'cronjob' => $cronjob, 'info' => NULL, 'update' => NULL]);
         }
       }
     }
   }
 }
-$offset = 0;
-while (true) {
-  if ($settings['always_online']) {
-    if (date('s') == 30) {
-      $MadelineProto->account->updateStatus(['offline' => 0]);
-    }
-  }
-  if (isset($settings['cronjobs']) and $settings['cronjobs']) {
-    $msg = NULL;
-    $msgid = NULL;
-    $type = NULL;
-    $cronjob = NULL;
-    cronrun();
-  }
-  try {
-    $updates = $MadelineProto->get_updates(['offset' => $offset, 'limit' => 50, 'timeout' => 0]);
-    foreach ($updates as $update) {
-      $offset = $update['update_id'] + 1;
-      if (isset($update['update']['message']['from_id'])) $userID = $update['update']['message']['from_id'];
-      if (isset($update['update']['message']['id'])) $msgid = $update['update']['message']['id'];
-      if (isset($update['update']['message']['message'])) $msg = $update['update']['message']['message'];
-      if ($settings['old_chatinfo']) {
-        if (isset($update['update']['message']['to_id']['channel_id'])) {
-          $chatID = '-100'.$update['update']['message']['to_id']['channel_id'];
-          $type = 'supergroup';
-        }
-        if (isset($update['update']['message']['to_id']['chat_id'])) {
-          $chatID = '-'.$update['update']['message']['to_id']['chat_id'];
-          $type = 'group';
-        }
-        if (isset($update['update']['message']['to_id']['user_id'])) {
-          $chatID = $update['update']['message']['from_id'];
-          $type = 'user';
-        }
-      } else {
-        if (isset($update['update']['message'])) {
-          if (isset($update['update']['message']['to_id'])) $info['to'] = $MadelineProto->get_info($update['update']['message']['to_id']);
-          if (isset($info['to']['bot_api_id'])) $chatID = $info['to']['bot_api_id'];
-          if (isset($info['to']['type'])) $type = $info['to']['type'];
-          if (isset($userID)) $info['from'] = $MadelineProto->get_info($userID);
-          if (isset($info['to']['User']['self']) and isset($userID) and $info['to']['User']['self'] and $userID) $chatID = $userID;
-          if (isset($type) and $type == 'chat') $type = 'group';
-          if (isset($info['from']['User']['first_name'])) $name = $info['from']['User']['first_name']; else $name = NULL;
-          if (isset($info['to']['Chat']['title'])) $title = $info['to']['Chat']['title']; else $title = NULL;
-          if (isset($info['from']['User']['username'])) $username = $info['from']['User']['username']; else $username = NULL;
-          if (isset($info['to']['Chat']['username'])) $chatusername = $info['to']['Chat']['username']; else $chatusername = NULL;
-        }
-      }
-      if ($settings['readmsg'] and isset($chatID) and $chatID and isset($userID) and $userID and isset($msgid) and $msgid and isset($type) and $type) {
-        try {
-          if (in_array($type, ['user', 'bot', 'group'])) {
-            $MadelineProto->messages->readHistory(['peer' => $chatID, 'max_id' => $msgid]);
-          } elseif(in_array($type, ['channel', 'supergroup'])) {
-            $MadelineProto->channels->readHistory(['channel' => $chatID, 'max_id' => $msgid]);
-          }
-        } catch(Exception $e) { }
-      }
-      if (isset($msg) and $msg) {
-        if (isset($msg) and isset($chatID) and isset($type) and isset($userID) and $msg and $chatID and $type and $userID) {
-          if ($type == 'user') {
-            echo $name.' ('.$userID.') >>> '.$c($msg)->bold.PHP_EOL;
-          } else {
-            echo $name.' ('.$userID.') -> '.$title.' ('.$chatID.') >>> '.$c($msg)->bold.PHP_EOL;
-          }
-        }
-      }
-      if (!isset($msg)) $msg = NULL;
-      if (!isset($chatID)) $chatID = NULL;
-      if (!isset($userID)) $userID = NULL;
-      if (!isset($msgid)) $msgid = NULL;
-      if (!isset($type)) $type = NULL;
-      if (!isset($name)) $name = NULL;
-      if (!isset($username)) $username = NULL;
-      if (!isset($chatusername)) $chatusername = NULL;
-      if (!isset($title)) $title = NULL;
-      if (!isset($info)) $info = NULL;
-      $cronjob = NULL;
-      if ($settings['plugins']) {
-        foreach ($plugins as $plugin) {
-          $plugin->onUpdate();
-        }
-      }
-      if ($settings['multithread']) {
-        $pid = pcntl_fork();
-        if ($pid == -1) {
-          die('could not fork');
-        } else if ($pid) {
-        } else {
-          try {
-            require('bot.php');
-          } catch(Exception $e) {
-            echo $c($strings['error'].$e)->white->bold->bg_red.PHP_EOL;
-            if (isset($chatID) and $settings['send_errors']) {
-              try {
-                $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
-              } catch(Exception $e) { }
-            }
-          }
-          posix_kill(posix_getpid(), SIGTERM);
-        }
-      } else {
-        try {
-          require('bot.php');
-        } catch(Exception $e) {
-          echo $c($strings['error'].$e)->white->bold->bg_red.PHP_EOL;
-          if (isset($chatID) and $settings['send_errors']) {
-            try {
-              $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
-            } catch(Exception $e) { }
-          }
-        }
-      }
-      if (isset($msg)) unset($msg);
-      if (isset($chatID)) unset($chatID);
-      if (isset($userID)) unset($userID);
-      if (isset($type)) unset($type);
-      if (isset($msgid)) unset($msgid);
-      if (isset($name)) unset($name);
-      if (isset($username)) unset($username);
-      if (isset($chatusername)) unset($chatusername);
-      if (isset($title)) unset($title);
-      if (isset($info)) $info = [];
-    }
-  } catch(Exception $e) {
-    echo $c($strings['error'].$e)->white->bold->bg_red.PHP_EOL;
-    if (isset($chatID) and $settings['send_errors']) {
-      try {
-        $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>'.$strings['error'].'</b> <code>'.$e->getMessage().'</code>', 'parse_mode' => 'HTML']);
-      } catch(Exception $e) { }
-    }
-  }
+
+$TGUserbot = new TGUserbot();
+if (isset($argv[1]) and $argv[1] == 'update') {
+  echo $TGUserbot->strings['updating'].PHP_EOL;
+  $TGUserbot->update();
+  echo $c($TGUserbot->strings['done'])->white->bold->bg_green.PHP_EOL;
+  exit;
 }
+if (isset($argv[1]) and $argv[1] == 'background') $TGUserbot->sbackground();
+if (isset($argv[2]) and $argv[2] == 'background') $TGUserbot->sbackground();
+$TGUserbot->check_updates();
+if ($TGUserbot->settings['cronjobs']) $cron = new TGUserbotCronjobs();
+echo $TGUserbot->strings['loading'];
+$TGUserbot->start();
