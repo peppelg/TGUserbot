@@ -7,6 +7,7 @@ include_once('functions.php');
 $c = new Colors\Color();
 $MadelineProto = NULL;
 $update = NULL;
+$data = [];
 class TGUserbotPlugin {
   public function onUpdate($update) { }
   public function onStart() { }
@@ -215,11 +216,13 @@ class TGUserbot {
       foreach ($update as $varname => $var) {
         if ($varname !== 'update') $$varname = $var;
       }
-      if (isset($msg) and isset($chatID) and isset($type) and isset($userID) and $msg) {
+      if (isset($msg) and isset($chatID) and isset($type) and $msg) {
         if ($type == 'user') {
           echo $name.' ('.$userID.') >>> '.$GLOBALS['c']($msg)->bold.PHP_EOL;
         } elseif ($type == 'cronjob') {
           if (is_string($cronjob)) echo 'CRONJOB >>> '.$GLOBALS['c']($cronjob)->bold.PHP_EOL; else echo 'CRONJOB >>> *array*'.PHP_EOL;
+        } elseif ($type == 'channel') {
+          echo $title.' ('.$chatID.') >>> '.$GLOBALS['c']($msg)->bold.PHP_EOL;
         } else {
           echo $name.' ('.$userID.') -> '.$title.' ('.$chatID.') >>> '.$GLOBALS['c']($msg)->bold.PHP_EOL;
         }
@@ -265,100 +268,100 @@ class TGUserbot {
           $command = explode(' ', fgets(STDIN), 2);
           if (posix_getpgid(PID) == false) exit;
           if (!isset($command[1])) $command[1] = '{}';
-          $command[0] = trim($command[0]);
-          if (isset($command[0]) and $command[0]) {
-            $r = json_decode($command[1], true);
-            $method = explode('.', $command[0], 2);
-            if (isset($method[0]) and isset($method[1])) {
-              try {
-                $response = $MadelineProto->{$method[0]}->{$method[1]}($r);
-              } catch (Exception $e) {
-                $this->error($e);
+            $command[0] = trim($command[0]);
+            if (isset($command[0]) and $command[0]) {
+              $r = json_decode($command[1], true);
+              $method = explode('.', $command[0], 2);
+              if (isset($method[0]) and isset($method[1])) {
+                try {
+                  $response = $MadelineProto->{$method[0]}->{$method[1]}($r);
+                } catch (Exception $e) {
+                  $this->error($e);
+                }
+              } elseif(isset($method[0])) {
+                try {
+                  $response = $MadelineProto->{$method[0]}($r);
+                } catch (Exception $e) {
+                  $this->error($e);
+                }
               }
-            } elseif(isset($method[0])) {
-              try {
-                $response = $MadelineProto->{$method[0]}($r);
-              } catch (Exception $e) {
-                $this->error($e);
+              if (isset($response)) {
+                echo json_encode($response, JSON_PRETTY_PRINT).PHP_EOL;
+                unset($response);
               }
-            }
-            if (isset($response)) {
-              echo json_encode($response, JSON_PRETTY_PRINT).PHP_EOL;
-              unset($response);
             }
           }
         }
       }
     }
   }
-}
 
-class TGUserbotEventHandler extends \danog\MadelineProto\EventHandler {
-  public function onAny($update) {
-    $GLOBALS['TGUserbot']->mUpdate($GLOBALS['TGUserbot']->parse_update($update));
-  }
-  public function onLoop() {
-    $GLOBALS['cron']->run();
-    if ($GLOBALS['TGUserbot']->settings['always_online']) {
-      if (in_array(date('s'), [0, 30, 31])) {
-        try {
-          $this->account->updateStatus(['offline' => 0]);
-        } catch (Exception $e) { }
-      }
+  class TGUserbotEventHandler extends \danog\MadelineProto\EventHandler {
+    public function onAny($update) {
+      $GLOBALS['TGUserbot']->mUpdate($GLOBALS['TGUserbot']->parse_update($update));
     }
-  }
-}
-
-class TGUserbotCronjobs {
-  public function add($time, $id) {
-    global $MadelineProto;
-    if (!is_numeric($time) or strlen($time) !== 10) {
-      $time = strtotime($time);
-    }
-    if (!is_numeric($time)) return false;
-    if ($time < time()) return false;
-    $MadelineProto->cronjobs[$time] = $id;
-    return true;
-  }
-  public function delete($id) {
-    global $MadelineProto;
-    $cronid = array_search($id, $MadelineProto->cronjobs);
-    if ($cronid !== false) {
-      unset($MadelineProto->cronjobs[$cronid]);
-      return true;
-    } else {
-      return false;
-    }
-  }
-  public function reset() {
-    global $MadelineProto;
-    $MadelineProto->cronjobs = [];
-    return true;
-  }
-  public function run() {
-    global $MadelineProto;
-    $now = date('d m Y H i');
-    if (isset($MadelineProto->cronjobs) and !empty($MadelineProto->cronjobs)) {
-      foreach ($MadelineProto->cronjobs as $time => $cronjob) {
-        if (date('d m Y H i', $time) === $now) {
-          $this->delete($cronjob);
-          $GLOBALS['TGUserbot']->mUpdate(['chatID' => 'cronjob', 'userID' => 'cronjob', 'msgid' => 'cronjob', 'type' => 'cronjob', 'name' => NULL, 'username' => NULL, 'chatusername' => NULL, 'title' => NULL, 'msg' => 'cronjob', 'cronjob' => $cronjob, 'info' => NULL, 'update' => NULL]);
+    public function onLoop() {
+      $GLOBALS['cron']->run();
+      if ($GLOBALS['TGUserbot']->settings['always_online']) {
+        if (in_array(date('s'), [0, 30, 31])) {
+          try {
+            $this->account->updateStatus(['offline' => 0]);
+          } catch (Exception $e) { }
         }
       }
     }
   }
-}
 
-$TGUserbot = new TGUserbot();
-if (isset($argv[1]) and $argv[1] == 'update') {
-  echo $TGUserbot->strings['updating'].PHP_EOL;
-  $TGUserbot->update();
-  echo $c($TGUserbot->strings['done'])->white->bold->bg_green.PHP_EOL;
-  exit;
-}
-if (isset($argv[1]) and $argv[1] == 'background') $TGUserbot->sbackground();
-if (isset($argv[2]) and $argv[2] == 'background') $TGUserbot->sbackground();
-$TGUserbot->check_updates();
-if ($TGUserbot->settings['cronjobs']) $cron = new TGUserbotCronjobs();
-echo $TGUserbot->strings['loading'];
-$TGUserbot->start();
+  class TGUserbotCronjobs {
+    public function add($time, $id) {
+      global $MadelineProto;
+      if (!is_numeric($time) or strlen($time) !== 10) {
+        $time = strtotime($time);
+      }
+      if (!is_numeric($time)) return false;
+      if ($time < time()) return false;
+      $MadelineProto->cronjobs[$time] = $id;
+      return true;
+    }
+    public function delete($id) {
+      global $MadelineProto;
+      $cronid = array_search($id, $MadelineProto->cronjobs);
+      if ($cronid !== false) {
+        unset($MadelineProto->cronjobs[$cronid]);
+        return true;
+      } else {
+        return false;
+      }
+    }
+    public function reset() {
+      global $MadelineProto;
+      $MadelineProto->cronjobs = [];
+      return true;
+    }
+    public function run() {
+      global $MadelineProto;
+      $now = date('d m Y H i');
+      if (isset($MadelineProto->cronjobs) and !empty($MadelineProto->cronjobs)) {
+        foreach ($MadelineProto->cronjobs as $time => $cronjob) {
+          if (date('d m Y H i', $time) === $now) {
+            $this->delete($cronjob);
+            $GLOBALS['TGUserbot']->mUpdate(['chatID' => 'cronjob', 'userID' => 'cronjob', 'msgid' => 'cronjob', 'type' => 'cronjob', 'name' => NULL, 'username' => NULL, 'chatusername' => NULL, 'title' => NULL, 'msg' => 'cronjob', 'cronjob' => $cronjob, 'info' => NULL, 'update' => NULL]);
+          }
+        }
+      }
+    }
+  }
+
+  $TGUserbot = new TGUserbot();
+  if (isset($argv[1]) and $argv[1] == 'update') {
+    echo $TGUserbot->strings['updating'].PHP_EOL;
+    $TGUserbot->update();
+    echo $c($TGUserbot->strings['done'])->white->bold->bg_green.PHP_EOL;
+    exit;
+  }
+  if (isset($argv[1]) and $argv[1] == 'background') $TGUserbot->sbackground();
+  if (isset($argv[2]) and $argv[2] == 'background') $TGUserbot->sbackground();
+  $TGUserbot->check_updates();
+  if ($TGUserbot->settings['cronjobs']) $cron = new TGUserbotCronjobs();
+  echo $TGUserbot->strings['loading'];
+  $TGUserbot->start();
