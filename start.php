@@ -301,7 +301,7 @@ class TGUserbot {
       $GLOBALS['TGUserbot']->mUpdate($GLOBALS['TGUserbot']->parse_update($update));
     }
     public function onLoop() {
-      $GLOBALS['cron']->run();
+      if ($GLOBALS['TGUserbot']->settings['cronjobs']) $GLOBALS['cron']->run();
       if ($GLOBALS['TGUserbot']->settings['always_online']) {
         if (in_array(date('s'), [0, 30, 31])) {
           try {
