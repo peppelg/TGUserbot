@@ -32,7 +32,7 @@ $startall = function (CliMenu $menu) {
   shell_exec('pkill -f start.php');
   foreach ($sessions as $session) {
     if (substr($session, -9) === '.madeline') {
-      shell_exec('php start.php '.'sessions/'.$session.' background');
+      shell_exec('php start.php '.'sessions/'.escapeshellarg($session).' background');
       echo $session.' '.$strings['started'].PHP_EOL;
     }
   }
@@ -61,14 +61,18 @@ $menu->setTitle('TGUserbot account manager')
           global $sessions;
           $session = 'sessions/'.$sessions[filter_var($menu->getSelectedItem()->getText(), FILTER_SANITIZE_NUMBER_INT)];
           $menu->close();
-          passthru('php start.php '.$session);
+          if (function_exists('pcntl_exec')) {
+            pcntl_exec($_SERVER['_'], [__DIR__.'/start.php', $session]);
+          } else {
+            passthru('php start.php '.escapeshellarg($session));
+          }
           exit;
       })
       ->addItem($strings['start_background'].' ['.$sessionN.']', function (CliMenu $menu) {
           global $strings;
           global $sessions;
           $session = 'sessions/'.$sessions[filter_var($menu->getSelectedItem()->getText(), FILTER_SANITIZE_NUMBER_INT)];
-          shell_exec('php start.php '.$session.' background');
+          shell_exec('php start.php '.escapeshellarg($session).' background');
           $menu->flash($strings['started'])
           ->display();
           $menu->close();
