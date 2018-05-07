@@ -19,7 +19,7 @@ Installa i pacchetti `git zip screen php php-mbstring php-xml php-gmp php-curl p
 
 Impostazioni
 ---------------
-Impostazioni in impostazioni.php
+Impostazioni in settings.php
 
 	language - imposta la lingua
 	session - imposta il nome del file della sessione madeline
