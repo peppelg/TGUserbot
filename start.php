@@ -41,6 +41,7 @@ class TGUserbot {
         $settings['madeline']['connection_settings']['all']['proxy'] = '\HttpProxy';
         $settings['madeline']['connection_settings']['all']['proxy_extra'] = $proxy;
       }
+      echo 'Proxy: '.$settings['proxy']['ip'].':'.$settings['proxy']['port'].' ('.$settings['proxy']['type'].')'.PHP_EOL;
     }
     if (isset($GLOBALS['argv'][1]) and $GLOBALS['argv'][1] != 'background') $settings['session'] = $GLOBALS['argv'][1];
     $strings = @json_decode(file_get_contents('strings_'.$settings['language'].'.json'), 1);
@@ -63,17 +64,43 @@ class TGUserbot {
     return true;
   }
   private function get_proxy() {
-    $proxy = json_decode(file_get_contents('https://api.getproxylist.com/proxy?protocol=socks5'), true);
+    $proxy = json_decode(@file_get_contents('https://api.getproxylist.com/proxy?protocol=socks5'), true);
     if (is_array($proxy) and isset($proxy['ip']) and isset($proxy['port']) and isset($proxy['protocol']) and $proxy['protocol'] === 'socks5') {
       return ['type' => 'socks5', 'ip' => $proxy['ip'], 'port' => $proxy['port']];
     } else {
       unset($proxy);
-      $proxy = json_decode(file_get_contents('http://pubproxy.com/api/proxy?type=socks5'), true);
+      $proxy = json_decode(@file_get_contents('http://pubproxy.com/api/proxy?type=socks5'), true);
       if (is_array($proxy) and isset($proxy['data'][0]['ip']) and isset($proxy['data'][0]['port']) and isset($proxy['data'][0]['type']) and $proxy['data'][0]['type'] === 'socks5') {
         return ['type' => 'socks5', 'ip' => $proxy['data'][0]['ip'], 'port' => $proxy['data'][0]['port']];
       } else {
-        //rip
-        return [];
+        $dom = new DOMDocument(); //stackoverflow <3
+        $html = @$dom->loadHTMLFile('https://www.socks-proxy.net');
+        $dom->preserveWhiteSpace = false;
+        $tables = $dom->getElementsByTagName('table');
+        $rows = $tables->item(0)->getElementsByTagName('tr');
+        $cols = $rows->item(0)->getElementsByTagName('th');
+        $row_headers = NULL;
+        foreach ($cols as $node) {
+          $row_headers[] = $node->nodeValue;
+        }
+        $table = [];
+        $rows = $tables->item(0)->getElementsByTagName('tr');
+        foreach ($rows as $row) {
+          $cols = $row->getElementsByTagName('td');
+          $row = [];
+          $i= 0;
+          foreach ($cols as $node) {
+            if($row_headers == NULL) $row[] = $node->nodeValue; else $row[$row_headers[$i]] = $node->nodeValue;
+            $i++;
+          }
+          $table[] = $row;
+        }
+        foreach ($table as $proxy) {
+          if (isset($proxy['IP Address']) and isset($proxy['Port']) and isset($proxy['Version']) and $proxy['Version'] === 'Socks5') {
+            return ['type' => 'socks5', 'ip' => $proxy['IP Address'], 'port' => $proxy['Port']];
+          }
+        }
+        return []; //rip
       }
     }
   }
