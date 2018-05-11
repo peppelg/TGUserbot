@@ -30,7 +30,7 @@ Impostazioni in settings.php
 	auto_reboot - se TGUserbot crasha si riavvia automaticamente
 	multithread - abilita multithread
 	send_data - aiuta a migliorare TGUserbot inviando alcuni dati (https://tguserbot.peppelg.space/privacy.txt)
-	proxy - vedi https://github.com/peppelg/TGUserbot#Proxy
+	proxy - vedi https://github.com/peppelg/TGUserbot#proxy
 
 
 Avvio
