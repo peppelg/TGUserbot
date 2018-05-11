@@ -30,6 +30,7 @@ Impostazioni in settings.php
 	auto_reboot - se TGUserbot crasha si riavvia automaticamente
 	multithread - abilita multithread
 	send_data - aiuta a migliorare TGUserbot inviando alcuni dati (https://tguserbot.peppelg.space/privacy.txt)
+	proxy - vedi https://github.com/peppelg/TGUserbot#Proxy
 
 
 Avvio
@@ -74,6 +75,11 @@ Funzioni
 	sm(Chat, Message, Reply, ParseMode);
 
 [Metodi MadelineProto](https://docs.madelineproto.xyz/API_docs/methods/)
+
+Proxy
+------
+1. Proxy automatico: TGUserbot otterrà automaticamente un proxy e lo userà, aggiungi in settings.php ```'proxy' => 'auto'```
+2. Manuale: Aggiungi in settings.php ```proxy => ['type' => 'socks5', 'ip' => 'ip del proxy', 'port' => 'porta del proxy', 'username' => 'username proxy', 'password' => 'password proxy']```. Per i proxy http sostituisci `socks5` con `http`. Puoi omettere username e password.
 
 Cronjobs
 ---------
