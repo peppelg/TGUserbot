@@ -28,7 +28,7 @@ class TGUserbot {
       if (isset($proxy['ip']) and isset($proxy['port']) and isset($proxy['type'])) $settings['proxy'] = $proxy;
       unset($proxy);
     }
-    if (isset($settings['proxy']['ip']) and isset($settings['proxy']['ip']) and isset($settings['proxy']['port'])) {
+    if (isset($settings['proxy']['type']) and isset($settings['proxy']['ip']) and isset($settings['proxy']['port'])) {
       $proxy = [];
       $proxy['address'] = $settings['proxy']['ip'];
       $proxy['port'] = $settings['proxy']['port'];
