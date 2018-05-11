@@ -20,9 +20,28 @@ class TGUserbot {
   public $me = NULL;
   public function __construct() {
     require_once('settings.php');
-    $settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'plugins_dir' => 'plugins', 'plugins' => false, 'cli' => true, 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
+    $settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'plugins_dir' => 'plugins', 'plugins' => false, 'cli' => true, 'proxy' => [], 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
     if (isset($settings) and is_array($settings)) $settings = array_merge($settings_default, $settings); else $settings = $settings_default;
     if ($settings['multithread'] and !function_exists('pcntl_fork')) $settings['multithread'] = false;
+    if (is_string($settings['proxy'] and $settings['proxy'] === 'auto') {
+      $proxy = $this->get_proxy();
+      if (isset($proxy['ip']) and isset($proxy['port']) and isset($proxy['type'])) $settings['proxy'] = $proxy;
+      unset($proxy);
+    }
+    if (isset($settings['proxy']['ip']) and isset($settings['proxy']['ip']) and isset($settings['proxy']['port'])) {
+      $proxy = [];
+      $proxy['address'] = $settings['proxy']['ip'];
+      $proxy['port'] = $settings['proxy']['port'];
+      if (isset($settings['proxy']['username'])) $proxy['username'] = $settings['proxy']['username'];
+      if (isset($settings['proxy']['password'])) $proxy['password'] = $settings['proxy']['password'];
+      if ($settings['proxy']['type'] === 'socks5') {
+        $settings['madeline']['connection_settings']['all']['proxy'] = '\SocksProxy';
+        $settings['madeline']['connection_settings']['all']['proxy_extra'] = $proxy;
+      } elseif($settings['proxy']['type']  === 'http') {
+        $settings['madeline']['connection_settings']['all']['proxy'] = '\HttpProxy';
+        $settings['madeline']['connection_settings']['all']['proxy_extra'] = $proxy;
+      }
+    }
     if (isset($GLOBALS['argv'][1]) and $GLOBALS['argv'][1] != 'background') $settings['session'] = $GLOBALS['argv'][1];
     $strings = @json_decode(file_get_contents('strings_'.$settings['language'].'.json'), 1);
     if (!file_exists('sessions')) mkdir('sessions');
@@ -42,6 +61,21 @@ class TGUserbot {
       echo ' '.$GLOBALS['c']('OK: '.$pluginN.' '.$this->strings['plugins_loaded'])->white->bold->bg_green.PHP_EOL;
     }
     return true;
+  }
+  private function get_proxy() {
+    $proxy = json_decode(file_get_contents('https://api.getproxylist.com/proxy?protocol=socks5'), true);
+    if (is_array($proxy) and isset($proxy['ip']) and isset($proxy['port']) and isset($proxy['protocol']) and $proxy['protocol'] === 'socks5') {
+      return ['type' => 'socks5', 'ip' => $proxy['ip'], 'port' => $proxy['port']];
+    } else {
+      unset($proxy);
+      $proxy = json_decode(file_get_contents('http://pubproxy.com/api/proxy?type=socks5'), true);
+      if (is_array($proxy) and isset($proxy['data'][0]['ip']) and isset($proxy['data'][0]['port']) and isset($proxy['data'][0]['type']) and $proxy['data'][0]['type'] === 'socks5') {
+        return ['type' => 'socks5', 'ip' => $proxy['data'][0]['ip'], 'port' => $proxy['data'][0]['port']];
+      } else {
+        //rip
+        return [];
+      }
+    }
   }
   private function load_plugins($dir = 'plugins') {
     if (!file_exists($dir)) {
