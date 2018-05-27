@@ -124,6 +124,8 @@ Avvia accountmanager.php, vai su Aggiungi account e scrivi il nome della session
 
 Supporto
 --------
+[Canale Telegram di TGUserbot](https://t.me/TGUserbotChannel)
+
 [Gruppo Telegram di TGUserbot](https://t.me/joinchat/HIyPnk3GQ7525LpP62yIWA)
 
 [Gruppo Telegram di peppelg](https://t.me/joinchat/AAAAAEHRBNZBqxOlwtwBaQ)
