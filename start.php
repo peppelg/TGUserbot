@@ -20,7 +20,7 @@ class TGUserbot {
   public $me = NULL;
   public function __construct() {
     require_once('settings.php');
-    $settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'plugins_dir' => 'plugins', 'plugins' => false, 'cli' => true, 'proxy' => [], 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => $settings['language'], 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
+    $settings_default = ['language' => 'it', 'session' => 'sessions/default.madeline', 'cronjobs' => true, 'send_errors' => true, 'readmsg' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'auto_updates' => true, 'send_data' => true, 'plugins_dir' => 'plugins', 'plugins' => false, 'cli' => true, 'proxy' => [], 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => 'it', 'app_version' => '4.7.0'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => 0]]];
     if (isset($settings) and is_array($settings)) $settings = array_merge($settings_default, $settings); else $settings = $settings_default;
     if ($settings['multithread'] and !function_exists('pcntl_fork')) $settings['multithread'] = false;
     if (is_string($settings['proxy']) and $settings['proxy'] === 'auto') {
