@@ -1,4 +1,5 @@
 {
+  "downloading_madelineproto": "Scaricando MadelineProto...",
   "loading_plugins": "Sto caricando i plugin...",
   "plugins_loaded": "plugin caricati!",
   "loading": "Sto caricando MadelineProto...",
@@ -10,7 +11,6 @@
   "session_loaded": "Sessione caricata!",
   "error": "Errore: ",
   "background": "TGUserbot avviato in background.",
-  "updating": "Aggiornamento in corso...",
   "done": "Fatto!",
   "new_session_name": "Nome della nuova sessione (invio per annullare): ",
   "add_account": "Aggiungi account",
@@ -24,7 +24,5 @@
   "session_deleted": "Sessione eliminata.",
   "go_back": "Torna indietro",
   "exit": "Esci",
-  "checking_updates": "Controllo nuovi aggiornamenti...",
-  "new_update": "Nuovo aggiornamento disponibile! Tra 10 secondi aggiornerò TGUserbot. Premi CTRL+C per annullare.",
   "rebooting": "Riavvio in corso..."
 }

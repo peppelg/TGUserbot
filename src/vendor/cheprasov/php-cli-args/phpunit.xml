@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    backupGlobals               = "false"
+    backupStaticAttributes      = "false"
+    colors                      = "true"
+    convertErrorsToExceptions   = "true"
+    convertNoticesToExceptions  = "true"
+    convertWarningsToExceptions = "true"
+    processIsolation            = "false"
+    stopOnFailure               = "true"
+    stopOnError                 = "true"
+    stopOnIncomplete            = "false"
+    stopOnSkipped               = "false"
+    bootstrap                   = "vendor/autoload.php"
+    syntaxCheck                 = "true"
+    verbose                     = "true"
+    beStrictAboutTestsThatDoNotTestAnything = "true"
+    checkForUnintentionallyCoveredCode  = "false"
+    beStrictAboutOutputDuringTests      = "false"
+    beStrictAboutTestSize               = "true"
+>
+    <testsuites>
+        <testsuite name="All tests">
+            <directory suffix="Test.php" >./tests/</directory>
+        </testsuite>
+    </testsuites>
+
+</phpunit>

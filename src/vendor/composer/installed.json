@@ -1,0 +1,210 @@
+[
+    {
+        "name": "beberlei/assert",
+        "version": "v2.9.6",
+        "version_normalized": "2.9.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/beberlei/assert.git",
+            "reference": "ec9e4cf0b63890edce844ee3922e2b95a526e936"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/beberlei/assert/zipball/ec9e4cf0b63890edce844ee3922e2b95a526e936",
+            "reference": "ec9e4cf0b63890edce844ee3922e2b95a526e936",
+            "shasum": ""
+        },
+        "require": {
+            "ext-mbstring": "*",
+            "php": ">=5.3"
+        },
+        "require-dev": {
+            "friendsofphp/php-cs-fixer": "^2.1.1",
+            "phpunit/phpunit": "^4.8.35|^5.7"
+        },
+        "time": "2018-06-11T17:15:25+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Assert\\": "lib/Assert"
+            },
+            "files": [
+                "lib/Assert/functions.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Benjamin Eberlei",
+                "email": "kontakt@beberlei.de",
+                "role": "Lead Developer"
+            },
+            {
+                "name": "Richard Quadling",
+                "email": "rquadling@gmail.com",
+                "role": "Collaborator"
+            }
+        ],
+        "description": "Thin assertion library for input validation in business models.",
+        "keywords": [
+            "assert",
+            "assertion",
+            "validation"
+        ]
+    },
+    {
+        "name": "cheprasov/php-cli-args",
+        "version": "2.1.0",
+        "version_normalized": "2.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/cheprasov/php-cli-args.git",
+            "reference": "86826b948a93ddaf3ce50ad73f1319024164a76f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/cheprasov/php-cli-args/zipball/86826b948a93ddaf3ce50ad73f1319024164a76f",
+            "reference": "86826b948a93ddaf3ce50ad73f1319024164a76f",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.5"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "4.8.*"
+        },
+        "time": "2018-03-10T18:03:37+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "CliArgs\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Alexander Cheprasov",
+                "email": "acheprasov84@gmail.com"
+            }
+        ],
+        "description": "Easy way to gets options from the command line argument list",
+        "homepage": "http://github.com/cheprasov/php-cli-args"
+    },
+    {
+        "name": "kevinlebrun/colors.php",
+        "version": "1.0.3",
+        "version_normalized": "1.0.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/kevinlebrun/colors.php.git",
+            "reference": "cdda5eee41314b87cd5a8bb91b1ffc7c0210e673"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/kevinlebrun/colors.php/zipball/cdda5eee41314b87cd5a8bb91b1ffc7c0210e673",
+            "reference": "cdda5eee41314b87cd5a8bb91b1ffc7c0210e673",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "3.7.*",
+            "satooshi/php-coveralls": "1.0.*",
+            "squizlabs/php_codesniffer": "1.*"
+        },
+        "time": "2018-05-30T08:34:23+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Colors": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Kevin Le Brun",
+                "email": "lebrun.k@gmail.com",
+                "homepage": "http://kevinlebrun.fr",
+                "role": "developer"
+            }
+        ],
+        "description": "Colors for PHP CLI scripts",
+        "homepage": "https://github.com/kevinlebrun/colors.php",
+        "keywords": [
+            "cli",
+            "color",
+            "colors",
+            "console",
+            "shell"
+        ]
+    },
+    {
+        "name": "php-school/cli-menu",
+        "version": "2.1.0",
+        "version_normalized": "2.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-school/cli-menu.git",
+            "reference": "62d3f44a68774d42ecae3adaacdf4811b0fbff9c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/php-school/cli-menu/zipball/62d3f44a68774d42ecae3adaacdf4811b0fbff9c",
+            "reference": "62d3f44a68774d42ecae3adaacdf4811b0fbff9c",
+            "shasum": ""
+        },
+        "require": {
+            "beberlei/assert": "^2.4",
+            "ext-posix": "*",
+            "php": ">=5.6"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~5.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2017-12-11T19:36:16+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "PhpSchool\\CliMenu\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Michael Woodward",
+                "email": "mikeymike.mw@gmail.com"
+            },
+            {
+                "name": "Aydin Hassan",
+                "email": "aydin@hotmail.com"
+            }
+        ],
+        "description": "A command line menu helper in PHP",
+        "keywords": [
+            "cli",
+            "console",
+            "menu",
+            "php-school",
+            "phpschool",
+            "terminal"
+        ]
+    }
+]

@@ -1,0 +1,39 @@
+{
+    "name": "php-school/cli-menu",
+    "description": "A command line menu helper in PHP",
+    "keywords": ["cli", "console", "terminal", "phpschool", "php-school", "menu"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Woodward",
+            "email": "mikeymike.mw@gmail.com"
+        },
+        {
+            "name": "Aydin Hassan",
+            "email": "aydin@hotmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "~5.0",
+        "squizlabs/php_codesniffer": "~2.0"
+    },
+    "require": {
+        "php" : ">=5.6",
+        "beberlei/assert": "^2.4",
+        "ext-posix": "*"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "PhpSchool\\CliMenu\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": { "PhpSchool\\CliMenuTest\\": "test/" }
+    },
+    "scripts" : {
+        "cs" : [
+            "phpcs src --standard=PSR2",
+            "phpcs test --standard=PSR2"
+        ]
+    }
+}
