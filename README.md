@@ -10,17 +10,19 @@ Automatica (Ubuntu/Debian)
 	cd TGUserbot
 
 Manuale:
-Installa i pacchetti `git zip screen php php-mbstring php-xml php-gmp php-curl php-bcmath php-zip php-json`
+Installa i pacchetti `git zip screen php php-mbstring php-xml php-gmp php-curl php-bcmath php-zip php-json php-cli`
 
-	curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/bin --filename=composer
 	git clone https://github.com/peppelg/TGUserbot
-	cd TGUserbot
-	composer update
+	cd TGUserbot && rm -rf src
+	./TGUserbot.phar
+	
+[Passare da TGUserbotV3 a TGUserbotV4](https://t.me/TGUserbotChannel/13)
 
 Impostazioni
 ---------------
 Impostazioni in settings.php
 
+	bot_file - imposta la path del file bot.php
 	language - imposta la lingua
 	session - imposta il nome del file della sessione madeline
 	cronjobs - attivare i cronjob?
@@ -35,28 +37,31 @@ Impostazioni in settings.php
 
 Avvio
 -----
-	php start.php
+	./TGUserbot.phar
 Avvio in background:
 
-	php start.php background
+	./TGUserbot.phar --background
 
-Aggiornare la base
+Aggiornare Madeline
 ------------------
-	php start.php update
+	Rimuovi il file `madeline.phar` e riavvia TGUserbot.
+	
+🌟 TGUserbot.phar sarà aggiornato automaticamente.
 
 
 Multi account
 -------------
-Carica una sessione: `php start.php sessions/nomesessione.madeline`
+Carica una sessione: `./TGUserbot.phar --session="nomesessione"`
 
-Carica una sessione in background: `php start.php sessions/nomesessione.madeline background`
+Carica una sessione in background: `./TGUserbot.phar --session="nomesessione"` --background
 
-🔥 Gestisci account: `php accountmanager.php`
+🔥 Gestisci account: `./TGUserbot.phar accounts`
 
 Variabili e funzioni
 --------------------
 Variabili
 
+	$update - update ricevuto
 	$msg - messaggio
 	$chatID - id della chat
 	$userID - id utente
@@ -66,8 +71,8 @@ Variabili
 	$username - username dell'utente
 	$title - titolo della chat
 	$chatusername - username della chat
-	$info - altre informazioni
 	$cronjob - id cronjob
+	$me - informazioni sull'utente
 
 
 Funzioni
