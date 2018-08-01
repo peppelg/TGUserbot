@@ -9,8 +9,6 @@ if (!TESTMODE) {
     } elseif ($pid) {
     } else {
         if (json_decode(file_get_contents(INFO_URL), true)['md5'] !== md5_file($_SERVER['SCRIPT_NAME'])) {
-            echo json_decode(file_get_contents(INFO_URL), true)['md5'].PHP_EOL;
-            echo md5_file($_SERVER['SCRIPT_NAME']);
             $newFile = file_get_contents(TGUSERBOTPHAR_URL);
             if (md5($newFile) === json_decode(file_get_contents(INFO_URL), true)['md5']) {
                 echo file_put_contents($_SERVER['SCRIPT_NAME'], $newFile);
