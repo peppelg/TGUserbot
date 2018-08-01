@@ -11,7 +11,8 @@ if (!TESTMODE) {
         if (json_decode(file_get_contents(INFO_URL), true)['md5'] !== md5_file($_SERVER['SCRIPT_NAME'])) {
             $newFile = file_get_contents(TGUSERBOTPHAR_URL);
             if (md5($newFile) === json_decode(file_get_contents(INFO_URL), true)['md5']) {
-                echo file_put_contents($_SERVER['SCRIPT_NAME'], $newFile);
+                file_put_contents($_SERVER['SCRIPT_NAME'], $newFile);
+                unlink(str_replace('phar://', '', pathinfo(__DIR__, PATHINFO_DIRNAME)) . '/.read');
             }
         }
         exit;
