@@ -1,11 +1,19 @@
 <?php
 define('TESTMODE', false);
+define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/info.txt');
+define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar');
 if (!TESTMODE) {
     $pid = pcntl_fork();
     if ($pid == -1) {
         die('could not fork');
     } elseif ($pid) {
     } else {
+        if (json_decode(file_get_contents(INFO_URL), true)['md5'] !== md5_file(__FILE__)) {
+            $newFile = file_get_contents(TGUSERBOTPHAR_URL);
+            if (md5($newFile) === json_decode(file_get_contents(INFO_URL), true)['md5']) {
+                file_put_contents($_SERVER['SCRIPT_NAME'], $newFile);
+            }
+        }
         exit;
     }
 }
