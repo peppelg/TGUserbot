@@ -136,6 +136,7 @@ class TGUserbot {
     }
   }
   public function update() {
+    return false;
     if(!rename('bot.php', 'bot.php_')) die('Error');
     rename('settings.php', 'settings.php_');
     rename('functions.php', 'functions.php_');
@@ -148,6 +149,7 @@ class TGUserbot {
     passthru('composer update');
   }
   public function check_updates() {
+    return false;
     if ($this->settings['auto_updates']) {
       echo $this->strings['checking_updates'];
       if (trim(exec('git ls-remote git://github.com/peppelg/TGUserbot.git refs/heads/master | cut -f 1')) !== trim(file_get_contents('.git/refs/heads/master'))) {
