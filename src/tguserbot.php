@@ -1,4 +1,14 @@
 <?php
+define('TESTMODE', false);
+if (!TESTMODE) {
+    $pid = pcntl_fork();
+    if ($pid == -1) {
+        die('could not fork');
+    } elseif ($pid) {
+    } else {
+        exit;
+    }
+}
 if (file_exists(__DIR__.'/.changelog')) { //mostra changelog aggiornamento
     $file = str_replace('phar://', '', pathinfo(__DIR__, PATHINFO_DIRNAME)) . '/.read';
     $changelog = json_decode(gzinflate(file_get_contents(__DIR__.'/.changelog')), true);

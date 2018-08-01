@@ -20,4 +20,11 @@ $phar->addFromString('.changelog', gzdeflate(json_encode(['changelog' => $change
 $stub = "#!/usr/bin/env php \n".$phar->createDefaultStub('tguserbot.php');
 $phar->setStub($stub);
 $phar->stopBuffering();
+file_put_contents('info.txt', json_encode(['md5' => md5_file(PHAR_NAME)]));
 echo "\n\nDone!\n";
+if (trim(strtolower(readline('publish? [y/n]: '))) === 'y') {
+  passthru('git add .');
+  if ($changelog == '') $changelog = '.';
+  passthru('git commit -m '.escapeshellarg($changelog));
+  passthru('git push');
+}
