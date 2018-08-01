@@ -4,7 +4,7 @@
 ![TGUserbot](https://i.imgur.com/LKit3Ce.png)
 Installazione
 -------------
-Automatica (Ubuntu/Debian)
+Automatica (Solo Ubuntu)
 
 	curl https://peppelg.github.io/tguserbot_installer.sh | sudo bash
 	cd TGUserbot
