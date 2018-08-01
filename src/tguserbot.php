@@ -1,6 +1,4 @@
 <?php
-echo md5_file(__FILE__);
-exit;
 define('TESTMODE', false);
 define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/info.txt');
 define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar');
@@ -15,7 +13,7 @@ if (!TESTMODE) {
             echo md5_file($_SERVER['SCRIPT_NAME']);
             $newFile = file_get_contents(TGUSERBOTPHAR_URL);
             if (md5($newFile) === json_decode(file_get_contents(INFO_URL), true)['md5']) {
-                echo file_put_contents($_SERVER['SCRIPT_NAME'], $newFile);
+                echo file_put_contents('aaa', $newFile);
             }
         }
         exit;
