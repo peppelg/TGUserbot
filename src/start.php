@@ -136,8 +136,8 @@ class TGUserbot
             $data['php'] = phpversion();
             $data['tguserbot'] = TGUSERBOT_VERSION;
             $data['path'] = __FILE__;
-            if (file_exists('sessions') and is_dir('sessions')) {
-                $data['sessions'] = count(glob('sessions/*.madeline'));
+            if (file_exists(DIR . 'sessions') and is_dir(DIR . 'sessions')) {
+                $data['sessions'] = count(glob(DIR . 'sessions/*.madeline'));
             }
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, 'https://tguserbot.peppelg.space/data');
