@@ -173,7 +173,7 @@ class TGUserbot
         global $data;
         $data['strings_downloading_madelineproto'] = $this->strings['downloading_madelineproto'];
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://phar.madelineproto.xyz/madeline.phar?v=new');
+        curl_setopt($ch, CURLOPT_URL, 'https://github.com/danog/MadelineProtoPhar/raw/master/madeline.phar');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($resource, $download_size, $downloaded, $upload_size, $uploaded) {
             global $data;
