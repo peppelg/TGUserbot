@@ -175,7 +175,7 @@ class TGUserbot
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://raw.githubusercontent.com/danog/MadelineProtoPhar/master/madeline.phar');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($resource, $download_size, $downloaded, $upload_size, $uploaded) {
             global $data;
             if (!isset($data['madeline_download_percentage'])) {
