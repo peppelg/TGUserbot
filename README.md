@@ -18,22 +18,6 @@ Installa i pacchetti `git zip screen php php-mbstring php-xml php-gmp php-curl p
 	
 [Passare da TGUserbotV3 a TGUserbotV4](https://t.me/TGUserbotChannel/13)
 
-Impostazioni
----------------
-Impostazioni in settings.php
-
-	bot_file - imposta la path del file bot.php
-	language - imposta la lingua
-	session - imposta il nome del file della sessione madeline
-	cronjobs - attivare i cronjob?
-	send_errors - invia errori in chat
-	readmsg - legge i messaggi in chat privata
-	always_online - mantiene lo stato in linea
-	auto_reboot - se TGUserbot crasha si riavvia automaticamente
-	multithread - abilita multithread
-	send_data - aiuta a migliorare TGUserbot inviando alcuni dati (https://tguserbot.peppelg.space/privacy.txt)
-	proxy - vedi https://github.com/peppelg/TGUserbot#proxy
-
 
 Avvio
 -----
@@ -56,6 +40,31 @@ Carica una sessione: `./TGUserbot.phar --session="nomesessione"`
 Carica una sessione in background: `./TGUserbot.phar --session="nomesessione"` --background
 
 🔥 Gestisci account: `./TGUserbot.phar accounts`
+
+🔥 Creare backup delle sessioni
+----------------------------
+`./TGUserbot.phar backup`
+
+![Backup](https://i.imgur.com/8js8yQT.png)
+
+Verrà creato un nuovo file contenente tutte le sessioni.
+
+Impostazioni
+---------------
+Impostazioni in settings.php
+
+	bot_file - imposta la path del file bot.php
+	language - imposta la lingua
+	session - imposta il nome del file della sessione madeline
+	cronjobs - attivare i cronjob?
+	send_errors - invia errori in chat
+	readmsg - legge i messaggi in chat privata
+	always_online - mantiene lo stato in linea
+	auto_reboot - se TGUserbot crasha si riavvia automaticamente
+	multithread - abilita multithread
+	send_data - aiuta a migliorare TGUserbot inviando alcuni dati (https://tguserbot.peppelg.space/privacy.txt)
+	proxy - vedi https://github.com/peppelg/TGUserbot#proxy
+
 
 Variabili e funzioni
 --------------------
