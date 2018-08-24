@@ -1,7 +1,9 @@
 {
-    "require": {
-        "kevinlebrun/colors.php": "^1.0",
-        "cheprasov/php-cli-args": "^2.1",
-	"php-school/cli-menu": "^2.1"
-    }
+  "require": {
+    "kevinlebrun/colors.php": "^1.0",
+    "cheprasov/php-cli-args": "^2.1",
+    "php-school/cli-menu": "^2.1",
+    "league/climate": "^3.4"
+  }
 }
+

@@ -24,5 +24,16 @@
   "session_deleted": "Sessione eliminata.",
   "go_back": "Torna indietro",
   "exit": "Esci",
-  "rebooting": "Riavvio in corso..."
+  "rebooting": "Riavvio in corso...",
+  "backup_welcome": "Cosa vuoi fare?\n1. Nuovo backup\n2. Ripristina backup\n3. Esci",
+  "new_backup": "Cosa vuoi fare?\n1. Esegui un backup di tutte le sessioni\n2. Seleziona le sessioni da backuppare\n3. Esci",
+  "new_backup_name": "Inserisci il nome del nuovo backup",
+  "select_sessions": "Seleziona le sessioni:",
+  "backup_started": "Backup avviato.",
+  "no_backup": "Nessun backup trovato.",
+  "select_backup": "Seleziona il file di backup: ",
+  "backup_not_found": "Backup non trovato.",
+  "invalid_backup": "Backup non valido.",
+  "backup_sessions": "Sessioni trovate nel backup: ",
+  "backup_restore_confirm": "Sei sicuro di voler importare le sessioni?"
 }

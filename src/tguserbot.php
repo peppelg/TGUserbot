@@ -2,7 +2,7 @@
 define('TESTMODE', false);
 define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/info.txt?cache='.uniqid());
 define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar?cache='.uniqid());
-if (!TESTMODE) {
+if (!TESTMODE and Phar::running()) {
     $pid = pcntl_fork();
     if ($pid == -1) {
         die('could not fork');
@@ -57,6 +57,9 @@ if (!isset($argv[1])) {
 switch ($argv[1]) {
   case 'accounts':
     require __DIR__.'/accountmanager.php';
+    exit;
+  case 'backup':
+    require __DIR__.'/backup.php';
     exit;
 }
 require __DIR__.'/start.php';
