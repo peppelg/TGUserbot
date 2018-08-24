@@ -12,8 +12,10 @@ if (file_exists(__DIR__ . '/strings_' . $settings['language'] . '.json')) {
 }
 require_once __DIR__.'/vendor/autoload.php';
 require DIR.'madeline.phar';
-function backup($sessions, $backupFile, $madelineSettings)
-{
+function backup($sessions, $backupFile, $madelineSettings) {
+    if (empty($sessions)) {
+        die('No session.'.PHP_EOL);
+    }
     $zip = new ZipArchive();
     $zip->open(DIR.$backupFile.'.tgs', ZIPARCHIVE::CREATE | ZIPARCHIVE::OVERWRITE);
     echo PHP_EOL;
@@ -161,7 +163,7 @@ if ($response === '2') {
         unlink($files[$response].'.temp');
         echo PHP_EOL.PHP_EOL.$strings['done'].PHP_EOL;
     } else {
+        unlink($files[$response].'.temp');
         exit;
     }
 }
- 
