@@ -58,7 +58,7 @@ Avvio in background:
 
 Aggiornare Madeline
 ------------------
-	Rimuovi il file `madeline.phar` e riavvia TGUserbot.
+Rimuovi il file `madeline.phar` e riavvia TGUserbot.
 	
 🌟 TGUserbot.phar sarà aggiornato automaticamente.
 
