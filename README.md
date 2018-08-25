@@ -2,8 +2,9 @@
 ![TGUserbot account manager](https://i.imgur.com/B6TUHyv.png)
 ![TGUserbot account manager](https://i.imgur.com/USK2Epe.png)
 ![TGUserbot](https://i.imgur.com/LKit3Ce.png)
+
 Installazione
--------------
+--------------
 Automatica (Solo Ubuntu)
 
 	curl https://peppelg.github.io/tguserbot_installer.sh | sudo bash
@@ -17,7 +18,6 @@ Installa i pacchetti `git zip screen php php-mbstring php-xml php-gmp php-curl p
 	./TGUserbot.phar
 	
 [Passare da TGUserbotV3 a TGUserbotV4](https://t.me/TGUserbotChannel/13)
-
 
 Avvio
 -----
@@ -41,13 +41,47 @@ Carica una sessione in background: `./TGUserbot.phar --session="nomesessione"` -
 
 🔥 Gestisci account: `./TGUserbot.phar accounts`
 
-🔥 Creare backup delle sessioni
+Creare backup delle sessioni
 ----------------------------
-`./TGUserbot.phar backup`
+🔥 `./TGUserbot.phar backup`
 
 ![Backup](https://i.imgur.com/8js8yQT.png)
 
 Verrà creato un nuovo file contenente tutte le sessioni.
+
+Come non fare bloccare il tuo bot
+----------------------------------
+Se hai un bot pesante, che perde molto tempo per fare delle azioni (es. eliminare una grossa quantità di messaggi), è consigliato renderlo asincrono, hai due opzioni:
+- Usare MadelinePromise (consigliato, è più veloce ed occupa meno risorse)
+- Abilitare il multithread nelle impostazioni (sconsigliato, è più lento e occupa più risorse)
+
+🌟 Per rendere il tuo bot più veloce disabilita delle impostazioni le funzioni che non usi.
+
+Usare MadelineCli
+------------------
+Abilita `cli` nelle impostazioni.
+
+Scrivi nel terminale `namespace.metodo <parametri in json`
+
+Esempio: `messages.sendMessage {"peer": "@peppelg", "message": "ciao"}`
+
+![Esempio](https://i.imgur.com/JppLzJk.png)
+
+Promise (+ -)
+--------------
+Abilita `madelinePromise` nelle impostazioni.
+
+Esempio:
+
+```php
+$MadelineProto->messages->sendMessage(['chat_id' => $chatID, 'message' => 'Messaggio'], function($response) use($MadelineProto, $chatID) {
+  //fai qualcosa dopo aver inviato il messaggio
+});
+```
+Trovi un esempio , in `bot.php`.
+
+MadelinePromise è asincrono, quindi non bloccherà tutto TGUserbot.
+
 
 Impostazioni
 ---------------
@@ -55,7 +89,6 @@ Impostazioni in settings.php
 
 	bot_file - imposta la path del file bot.php
 	language - imposta la lingua
-	session - imposta il nome del file della sessione madeline
 	cronjobs - attivare i cronjob?
 	send_errors - invia errori in chat
 	readmsg - legge i messaggi in chat privata
@@ -63,7 +96,10 @@ Impostazioni in settings.php
 	auto_reboot - se TGUserbot crasha si riavvia automaticamente
 	multithread - abilita multithread
 	send_data - aiuta a migliorare TGUserbot inviando alcuni dati (https://tguserbot.peppelg.space/privacy.txt)
+	cli - usa madelinecli
+	madelinePromise - usa promise
 	proxy - vedi https://github.com/peppelg/TGUserbot#proxy
+	madeline - impostazioni di madeline
 
 
 Variabili e funzioni
@@ -99,29 +135,37 @@ Cronjobs
 ---------
 Crea un nuovo cronjob (tra un minuto):
 
-	$cron->add('next minute', 'cronjobid');
-	//oppure
-	$cron->add(time()+60, 'cronjobid');
+```php
+$cron->add('next minute', 'cronjobid');
+//oppure
+$cron->add(time()+60, 'cronjobid');
+```
 
 Cancella un cronjob:
 
-	$cron->delete('cronjobid');
+```php
+$cron->delete('cronjobid');
+```
 
 Cancella tutti i cronjob:
 
-	$cron->delete();
+```php
+$cron->delete();
+```
 
 Quando sarà il momento, verrà dichiarata la variabile `$cronjob`, potrai gestire tutto da bot.php.
 
 Esempio (bot.php):
 
-	if ($msg == 'Invia tra un minuto un messaggio a 🅱️eppe') {
-	  $cron->add('next minute', 'messaggio a peppe');
-	  sm($chatID, 'Ok! Tra un minuto invierò un messaggio a Peppe');
-	}
-	if ($cronjob == 'messaggio a peppe') {
-	  sm('@peppelg1', 'Zao, kome stai¿¿');
-	}
+```php
+if ($msg == 'Invia tra un minuto un messaggio a 🅱️eppe') {
+  $cron->add('next minute', 'messaggio a peppe');
+  sm($chatID, 'Ok! Tra un minuto invierò un messaggio a Peppe');
+}
+if ($cronjob == 'messaggio a peppe') {
+  sm('@peppelg1', 'Zao, kome stai¿¿');
+}
+```
 
 ⚠️ I secondi non verrano considerati
 
