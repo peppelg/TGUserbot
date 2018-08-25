@@ -1,5 +1,5 @@
 <?php
-define('TGUSERBOT_VERSION', '4.0');
+define('TGUSERBOT_VERSION', '4.2');
 define('PID', getmypid());
 if (!Phar::running()) {
     define('DIR', __DIR__ . '/');
@@ -28,17 +28,15 @@ $MadelineProto = null;
 $update = null;
 $c = null;
 
-class TGUserbot
-{
+class TGUserbot {
     private $settings = [];
-    public function __construct()
-    {
+    public function __construct() {
         global $MadelineProto;
         global $update;
         global $c;
         require_once __DIR__ . '/vendor/autoload.php';
         $c = new Colors\Color();
-        $settings_default = ['bot_file' => 'bot.php', 'language' => 'it', 'readmsg' => true, 'cronjobs' => true, 'send_errors' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'send_data' => true, 'cli' => true, 'proxy' => [], 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => 'it', 'app_version' => '4.9.0', 'device_model' => 'Asus ASUS_Z00ED', 'system_version' => 'Android Nougat MR1 (25)'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => false], 'secret_chats' => ['accept_chats' => false]]];
+        $settings_default = ['bot_file' => 'bot.php', 'language' => 'it', 'readmsg' => true, 'cronjobs' => true, 'send_errors' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'send_data' => true, 'cli' => true, 'madelinePromise' => true, 'proxy' => [], 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => 'it', 'app_version' => '4.9.0', 'device_model' => 'Asus ASUS_Z00ED', 'system_version' => 'Android Nougat MR1 (25)'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => false], 'secret_chats' => ['accept_chats' => false]]];
         if (!file_exists(DIR . 'settings.json')) {
             file_put_contents(DIR . 'settings.json', json_encode($settings_default, JSON_PRETTY_PRINT));
         }
@@ -165,11 +163,13 @@ class TGUserbot
         if ($this->settings['cli']) {
             $this->MadelineCli();
         }
+        if ($this->settings['madelinePromise']) {
+            $MadelineProto = new MadelinePromise($MadelineProto);
+        }
         echo $c($this->strings['session_loaded'])->white->bold->bg_green . PHP_EOL;
         $this->start();
     }
-    private function downloadMadelineproto()
-    {
+    private function downloadMadelineproto() {
         global $data;
         $data['strings_downloading_madelineproto'] = $this->strings['downloading_madelineproto'];
         $ch = curl_init();
@@ -200,8 +200,7 @@ class TGUserbot
         unset($phar);
         return true;
     }
-    private function getProxy()
-    {
+    private function getProxy() {
         $proxy = json_decode(@file_get_contents('https://api.getproxylist.com/proxy?protocol=socks5'), true);
         if (is_array($proxy) and isset($proxy['ip']) and isset($proxy['port']) and isset($proxy['protocol']) and $proxy['protocol'] === 'socks5') {
             return ['type' => 'socks5', 'ip' => $proxy['ip'], 'port' => $proxy['port']];
@@ -246,8 +245,7 @@ class TGUserbot
             }
         }
     }
-    private function loadPlugins($dir = 'plugins')
-    {
+    private function loadPlugins($dir = 'plugins') {
         if (!file_exists($dir)) {
             $this->settings['plugins'] = false;
             return false;
@@ -278,8 +276,7 @@ class TGUserbot
             return $pluginN;
         }
     }
-    private function login()
-    {
+    private function login() {
         global $MadelineProto;
         echo $this->strings['ask_phone_number'];
         $phoneNumber = trim(fgets(STDIN));
@@ -319,8 +316,7 @@ class TGUserbot
         }
         return $MadelineProto->get_self();
     }
-    private function start()
-    {
+    private function start() {
         global $MadelineProto;
         global $cron;
         $offset = - 1;
@@ -358,8 +354,7 @@ class TGUserbot
             }
         }
     }
-    private function parseUpdate($update)
-    {
+    private function parseUpdate($update) {
         global $MadelineProto;
         $result = ['chatID' => null, 'userID' => null, 'msgid' => null, 'type' => null, 'name' => null, 'username' => null, 'chatusername' => null, 'title' => null, 'msg' => null, 'cronjob' => null, 'info' => null, 'update' => $update];
         try {
@@ -409,8 +404,7 @@ class TGUserbot
         }
         return $result;
     }
-    private function handleUpdate($mUpdate)
-    {
+    private function handleUpdate($mUpdate) {
         global $MadelineProto;
         global $update;
         global $cron;
@@ -462,8 +456,7 @@ class TGUserbot
             }
         }
     }
-    public function MadelineCli()
-    {
+    public function MadelineCli() {
         if (function_exists('pcntl_fork') and function_exists('posix_getpgid')) {
             global $MadelineProto;
             $pid = pcntl_fork();
@@ -505,8 +498,7 @@ class TGUserbot
             }
         }
     }
-    public function error($e)
-    {
+    public function error($e) {
         global $MadelineProto;
         global $update;
         global $c;
@@ -520,10 +512,8 @@ class TGUserbot
     }
 }
 
-class TGUserbotCronjobs
-{
-    public function add($time, $id)
-    {
+class TGUserbotCronjobs {
+    public function add($time, $id) {
         global $MadelineProto;
         if (!is_numeric($time) or strlen($time) !== 10) {
             $time = strtotime($time);
@@ -537,8 +527,7 @@ class TGUserbotCronjobs
         $MadelineProto->cronjobs[$time] = $id;
         return true;
     }
-    public function delete($id)
-    {
+    public function delete($id) {
         global $MadelineProto;
         $cronid = array_search($id, $MadelineProto->cronjobs);
         if ($cronid !== false) {
@@ -548,14 +537,12 @@ class TGUserbotCronjobs
             return false;
         }
     }
-    public function reset()
-    {
+    public function reset() {
         global $MadelineProto;
         $MadelineProto->cronjobs = [];
         return true;
     }
-    public function run()
-    {
+    public function run() {
         global $MadelineProto;
         global $TGUserbot;
         $now = date('d m Y H i');
@@ -570,13 +557,62 @@ class TGUserbotCronjobs
     }
 }
 
-class TGUserbotPlugin
-{
-    public function onUpdate($update)
-    {
+class TGUserbotPlugin {
+    public function onUpdate($update) {
     }
-    public function onStart()
-    {
+    public function onStart() {
+    }
+}
+
+class MadelinePromise {
+    private $MadelineProto = null;
+    private $namespace = null;
+    public function __construct($madeline) {
+        $this->MadelineProto = $madeline;
+    }
+    public function __set($name, $value) {
+        $this->MadelineProto->{$name} = $value;
+    }
+    public function __get($name) {
+        if (in_array($name, ['account', 'auth', 'bots', 'channels', 'contacts', 'help', 'langpack', 'messages', 'payments', 'phone', 'photos', 'stickers', 'updates', 'upload', 'users'])) {
+            $this->namespace = $name;
+            return $this;
+        } else {
+            return $this->MadelineProto->{$name};
+        }
+    }
+    public function __call($name, $arguments) {
+        if (isset($this->namespace)) {
+            $namespace = $this->namespace;
+            $this->namespace = null;
+        } else {
+            $namespace = null;
+        }
+        end($arguments);
+        $end = key($arguments);
+        reset($arguments);
+        if (is_callable($arguments[$end])) {
+            $fn = $arguments[$end];
+            unset($arguments[$end]);
+            $pid = pcntl_fork();
+            if ($pid == -1) {
+                die('could not fork');
+            } elseif ($pid) {
+            } else {
+                $fn($this->MadelineCall($namespace, $name, $arguments));
+                exit;
+            }
+            return true;
+        } else {
+            return $this->MadelineCall($namespace, $name, $arguments);
+        }
+    }
+    private function MadelineCall($namespace, $method, $arguments) {
+        if (isset($namespace)) {
+            return call_user_func_array([$this->MadelineProto->{$namespace}, $method], $arguments);
+        } else {
+            return call_user_func_array([$this->MadelineProto, $method], $arguments);
+        }
     }
 }
 
