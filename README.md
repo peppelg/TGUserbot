@@ -5,6 +5,7 @@
 
 Index
 -----
+- [Perchè usare TGUserbot](#perchè-usare-tguserbot)
 - [Installazione](#installazione)
 - [Avvio](#avvio)
 - [Aggiornare Madeline](#aggiornare-madeline)
@@ -19,6 +20,18 @@ Index
 - [Creare cronjob](#cronjobs)
 - [Plugin](#plugin)
 - [Supporto](#supporto)
+
+Perchè usare TGUserbot
+-----------------------
+- È facile da usare
+- [Puoi usare più account](#multi-account)
+- [Puoi facilmente fare un backup di tutti i tuoi account](#creare-backup-delle-sessioni)
+- [È asincrono](#come-non-fare-bloccare-il-tuo-bot)
+- [Puoi inviare messaggi direttamente dal terminale](#usare-madelinecli)
+- [Puoi usare i cronjob](#cronjobs)
+- [Puoi creare ed usare plugin](#plugin)
+- [È facile usare (e anche cercare automaticamente!) un proxy](#proxy)
+- Gestisce automaticamente gli update, legge i messaggi, può inviare gli errori in chat
 
 Installazione
 --------------
@@ -69,7 +82,7 @@ Verrà creato un nuovo file contenente tutte le sessioni.
 Come non fare bloccare il tuo bot
 ----------------------------------
 Se hai un bot pesante, che perde molto tempo per fare delle azioni (es. eliminare una grossa quantità di messaggi), è consigliato renderlo asincrono, hai due opzioni:
-- Usare MadelinePromise (consigliato, è più veloce ed occupa meno risorse)
+- Usare [MadelinePromise](#promise) (consigliato, è più veloce ed occupa meno risorse)
 - Abilitare il multithread nelle impostazioni (sconsigliato, è più lento e occupa più risorse)
 
 🌟 Per rendere il tuo bot più veloce disabilita delle impostazioni le funzioni che non usi.
@@ -137,7 +150,7 @@ Variabili
 	$me - informazioni sull'utente
 
 
-Funzioni
+Funzioni in functions.php
 
 	sm(Chat, Message, Reply, ParseMode);
 
@@ -195,7 +208,7 @@ Per installare un plugin crea una cartella chiamata `plugins` e metti dentro i p
 
 Creare un bot (non userbot) con TGUserbot
 ------------------------------------------
-Avvia accountmanager.php, vai su Aggiungi account e scrivi il nome della sessione. Quando TGUserbot chiederà il numero di telefono, scrivi `bot` e poi il token del bot.
+Avvia ./TGuserbot.phar, vai su Aggiungi account e scrivi il nome della sessione. Quando TGUserbot chiederà il numero di telefono, scrivi `bot` e poi il token del bot.
 
 Supporto
 --------
@@ -208,3 +221,5 @@ Supporto
 [Gruppo Telegram di MadelineProto](https://t.me/pwrtelegramgroupita)
 
 [Gruppo Telegram di MadelineProto inglese](https://t.me/joinchat/Bgrajz6K-aJKu0IpGsLpBg)
+
+[Metodi MadelineProto](https://docs.madelineproto.xyz/API_docs/methods/)
