@@ -3,6 +3,23 @@
 ![TGUserbot account manager](https://i.imgur.com/USK2Epe.png)
 ![TGUserbot](https://i.imgur.com/LKit3Ce.png)
 
+Index
+-----
+- [Installazione](#installazione)
+- [Avvio](#avvio)
+- [Aggiornare Madeline](#aggiornare-madeline)
+- [Multi account](#multi-account)
+- [Come fare il backup delle sessioni](#creare-backup-delle-sessioni)
+- [Suggerimenti per non fare bloccare il tuo bot](#come-non-fare-bloccare-il-tuo-bot)
+- [Usare MadelineCli](#usare-madelinecli)
+- [Promise](#promise)
+- [Impostazioni](#impostazioni)
+- [Variabili e funzioni](#variabili-e-funzioni)
+- [Proxy](#proxy)
+- [Creare cronjob](#cronjobs)
+- [Plugin](#plugin)
+- [Supporto](#supporto)
+
 Installazione
 --------------
 Automatica (Solo Ubuntu)
@@ -67,7 +84,7 @@ Esempio: `messages.sendMessage {"peer": "@peppelg", "message": "ciao"}`
 
 ![Esempio](https://i.imgur.com/JppLzJk.png)
 
-Promise (+ -)
+Promise
 --------------
 Abilita `madelinePromise` nelle impostazioni.
 
