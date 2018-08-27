@@ -409,7 +409,6 @@ class TGUserbot {
         global $update;
         global $cron;
         global $data;
-        global $c;
         $update = array_merge($update, $mUpdate);
         foreach ($update as $varname => $var) {
             if ($varname !== 'update') {
@@ -418,17 +417,17 @@ class TGUserbot {
         }
         if (isset($msg) and isset($chatID) and isset($type) and $msg) {
             if ($type == 'user') {
-                echo $name . ' (' . $userID . ') >>> ' . $c($msg)->bold . PHP_EOL;
+                echo $name . ' (' . $userID . ') >>> ' . $GLOBALS['c']($msg)->bold . PHP_EOL;
             } elseif ($type == 'cronjob') {
                 if (is_string($cronjob)) {
-                    echo 'CRONJOB >>> ' . $c($cronjob)->bold . PHP_EOL;
+                    echo 'CRONJOB >>> ' . $GLOBALS['c']($cronjob)->bold . PHP_EOL;
                 } else {
                     echo 'CRONJOB >>> *array*' . PHP_EOL;
                 }
             } elseif ($type == 'channel') {
-                echo $title . ' (' . $chatID . ') >>> ' . $c($msg)->bold . PHP_EOL;
+                echo $title . ' (' . $chatID . ') >>> ' . $GLOBALS['c']($msg)->bold . PHP_EOL;
             } else {
-                echo $name . ' (' . $userID . ') -> ' . $title . ' (' . $chatID . ') >>> ' . $c($msg)->bold . PHP_EOL;
+                echo $name . ' (' . $userID . ') -> ' . $title . ' (' . $chatID . ') >>> ' . $GLOBALS['c']($msg)->bold . PHP_EOL;
             }
         }
         if ($this->settings['readmsg'] and isset($chatID) and isset($msgid) and $msgid and isset($type)) {
@@ -502,6 +501,9 @@ class TGUserbot {
         global $MadelineProto;
         global $update;
         global $c;
+        if (!method_exists($e , '__toString')) {
+            return true;
+        }
         echo $c($this->strings['error'] . $e)->white->bold->bg_red . PHP_EOL;
         if (isset($update['chatID']) and $this->settings['send_errors']) {
             try {
