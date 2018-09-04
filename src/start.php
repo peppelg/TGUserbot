@@ -454,6 +454,7 @@ class TGUserbot {
                 $this->error($e);
             }
         }
+        $update = ['me' => $update['me']];
     }
     public function MadelineCli() {
         if (function_exists('pcntl_fork') and function_exists('posix_getpgid')) {
