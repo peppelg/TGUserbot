@@ -611,6 +611,9 @@ class MadelinePromise {
         }
     }
     private function MadelineCall($namespace, $method, $arguments) {
+        if ($method === 'fork') {
+            return true;
+        }
         if (isset($namespace)) {
             return call_user_func_array([$this->MadelineProto->{$namespace}, $method], $arguments);
         } else {
