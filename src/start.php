@@ -594,7 +594,7 @@ class MadelinePromise {
         end($arguments);
         $end = key($arguments);
         reset($arguments);
-        if (is_callable($arguments[$end])) {
+        if (isset($end) and is_callable($arguments[$end])) {
             $fn = $arguments[$end];
             unset($arguments[$end]);
             $pid = pcntl_fork();
