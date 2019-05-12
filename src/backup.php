@@ -11,7 +11,10 @@ if (file_exists(__DIR__ . '/strings_' . $settings['language'] . '.json')) {
     $strings = json_decode(file_get_contents(__DIR__ . '/strings_it.json'), true);
 }
 require_once __DIR__.'/vendor/autoload.php';
-require DIR.'madeline.phar';
+if (!file_exists('madeline.php')) {
+    copy('https://phar.madelineproto.xyz/madeline.php', 'madeline.php');
+}
+include 'madeline.php';
 function backup($sessions, $backupFile, $madelineSettings) {
     if (empty($sessions)) {
         die('No session.'.PHP_EOL);
