@@ -73,10 +73,10 @@ class TGUserbot {
         unset($args);
         unset($CliArgs);
         echo $this->strings['loading'] . PHP_EOL;
-        if (!file_exists(DIR . 'madeline.phar')) {
-            $this->downloadMadelineProto();
+        if (!file_exists('madeline.php')) {
+            copy('https://phar.madelineproto.xyz/madeline.php', 'madeline.php');
         }
-        require_once DIR . 'madeline.phar';
+        include 'madeline.php';
         if (is_string($this->settings['proxy']) and $this->settings['proxy'] === 'auto') {
             $proxy = $this->getProxy();
             if (isset($proxy['ip']) and isset($proxy['port']) and isset($proxy['type'])) {
