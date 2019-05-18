@@ -1,5 +1,5 @@
 <?php
-define('TGUSERBOT_VERSION', '4.2');
+define('TGUSERBOT_VERSION', '4.3');
 define('PID', getmypid());
 if (!Phar::running()) {
     define('DIR', __DIR__ . '/');
@@ -36,7 +36,7 @@ class TGUserbot {
         global $c;
         require_once __DIR__ . '/vendor/autoload.php';
         $c = new Colors\Color();
-        $settings_default = ['bot_file' => 'bot.php', 'language' => 'it', 'readmsg' => true, 'cronjobs' => true, 'send_errors' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'send_data' => true, 'cli' => true, 'madelinePromise' => true, 'proxy' => [], 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => 'it', 'app_version' => '4.9.0', 'device_model' => 'Asus ASUS_Z00ED', 'system_version' => 'Android Nougat MR1 (25)'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => false], 'secret_chats' => ['accept_chats' => false]]];
+        $settings_default = ['bot_file' => 'bot.php', 'madelinephar' => 'default', 'language' => 'it', 'readmsg' => true, 'cronjobs' => true, 'send_errors' => true, 'always_online' => false, 'auto_reboot' => true, 'multithread' => false, 'send_data' => true, 'cli' => true, 'madelinePromise' => false, 'proxy' => [], 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => 'it', 'app_version' => '4.9.0', 'device_model' => 'Asus ASUS_Z00ED', 'system_version' => 'Android Nougat MR1 (25)'], 'logger' => ['logger' => 0], 'updates' => ['handle_old_updates' => false], 'secret_chats' => ['accept_chats' => false]]];
         if (!file_exists(DIR . 'settings.json')) {
             file_put_contents(DIR . 'settings.json', json_encode($settings_default, JSON_PRETTY_PRINT));
         }
@@ -73,10 +73,16 @@ class TGUserbot {
         unset($args);
         unset($CliArgs);
         echo $this->strings['loading'] . PHP_EOL;
-        if (!file_exists(DIR . 'madeline.phar')) {
-            $this->downloadMadelineProto();
+        if ($this->settings['madelinephar'] === 'default') {
+            $madelinephar = DIR . 'madeline.phar';
+            if (!file_exists($madelinephar)) {
+                $this->downloadMadelineproto();
+            }
+        } else {
+            $madelinephar = $this->settings['madelinephar'];
         }
-        require_once DIR . 'madeline.phar';
+        if (!file_exists($madelinephar)) die('File ' . $madelinephar . ' not found.');
+        require_once $madelinephar;
         if (is_string($this->settings['proxy']) and $this->settings['proxy'] === 'auto') {
             $proxy = $this->getProxy();
             if (isset($proxy['ip']) and isset($proxy['port']) and isset($proxy['type'])) {
@@ -140,7 +146,7 @@ class TGUserbot {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, 'https://tguserbot.peppelg.space/data');
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['TGUSERBOTDATA: ' . json_encode($data) ]);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['TGUSERBOTDATA: ' . json_encode($data)]);
             curl_setopt($ch, CURLOPT_USERAGENT, 'TGUserbot data');
             curl_setopt($ch, CURLOPT_TIMEOUT, 1);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -173,7 +179,7 @@ class TGUserbot {
         global $data;
         $data['strings_downloading_madelineproto'] = $this->strings['downloading_madelineproto'];
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://raw.githubusercontent.com/danog/MadelineProtoPhar/master/madeline.phar');
+        curl_setopt($ch, CURLOPT_URL, 'https://raw.githubusercontent.com/peppelg/MadelineProtoPharProfessional/master/madeline.phar');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($resource, $download_size, $downloaded, $upload_size, $uploaded) {
@@ -195,7 +201,7 @@ class TGUserbot {
         curl_close($ch);
         unset($data['madeline_download_percentage']);
         unset($data['strings_downloading_madelineproto']);
-        file_put_contents('madeline.phar', $phar);
+        file_put_contents(DIR . 'madeline.phar', $phar);
         echo $this->strings['done'] . '                                        ' . PHP_EOL;
         unset($phar);
         return true;
@@ -576,7 +582,7 @@ class MadelinePromise {
     public function __set($name, $value) {
         $this->MadelineProto->{$name} = $value;
     }
-    public function __get($name) {
+    public function &__get($name) {
         if (in_array($name, ['account', 'auth', 'bots', 'channels', 'contacts', 'help', 'langpack', 'messages', 'payments', 'phone', 'photos', 'stickers', 'updates', 'upload', 'users'])) {
             $this->namespace = $name;
             return $this;

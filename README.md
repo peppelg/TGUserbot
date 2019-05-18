@@ -46,7 +46,7 @@ Installa i pacchetti `git zip screen php php-mbstring php-xml php-gmp php-curl p
 	git clone https://github.com/peppelg/TGUserbot
 	cd TGUserbot && rm -rf src
 	./TGUserbot.phar
-	
+
 [Passare da TGUserbotV3 a TGUserbotV4](https://t.me/TGUserbotChannel/13)
 
 Avvio
@@ -59,7 +59,7 @@ Avvio in background:
 Aggiornare Madeline
 ------------------
 Rimuovi il file `madeline.phar` e riavvia TGUserbot.
-	
+
 🌟 TGUserbot.phar sarà aggiornato automaticamente.
 
 
@@ -118,6 +118,7 @@ Impostazioni
 Impostazioni in settings.php
 
 	bot_file - imposta la path del file bot.php
+	madelinephar - file da includere per usare madeline (con valore default userà MadelineProtoPharProfessional, per usare l'ultima versione di MadelineProto puoi scaricare madeline.php ed impostare madeline.php come valore di madelinephar,.,)
 	language - imposta la lingua
 	cronjobs - attivare i cronjob?
 	send_errors - invia errori in chat
