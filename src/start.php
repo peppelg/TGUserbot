@@ -336,7 +336,7 @@ class TGUserbot {
                 unset($cjb);
             }
             if ($this->settings['always_online']) {
-                if (in_array(date('s'), [0, 30, 31])) {
+                if (in_array(date('s'), [00, 30, 31])) {
                     try {
                         $this->account->updateStatus(['offline' => 0], ['noResponse' => true]);
                     } catch (Exception $e) {
