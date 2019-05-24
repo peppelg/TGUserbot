@@ -61,5 +61,8 @@ switch ($argv[1]) {
   case 'backup':
     require __DIR__.'/backup.php';
     exit;
+  case 'startAll':
+    require __DIR__.'/startAll.php';
+    exit;
 }
 require __DIR__.'/start.php';

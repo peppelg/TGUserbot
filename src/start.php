@@ -66,7 +66,7 @@ class TGUserbot {
         }
         $this->settings['session'] = DIR . 'sessions/' . $args['session'] . '.madeline';
         if (array_key_exists('background', $args)) {
-            shell_exec('screen -d -m ' . $_SERVER['_'] . ' ' . escapeshellarg($_SERVER['SCRIPT_NAME']) . ' --session=' . escapeshellarg($args['session']));
+            shell_exec('screen -d -m ' . PHP_BINARY . ' ' . escapeshellarg($_SERVER['SCRIPT_NAME']) . ' --session=' . escapeshellarg($args['session']));
             echo $this->strings['background'] . PHP_EOL;
             exit;
         }
@@ -79,9 +79,9 @@ class TGUserbot {
                 $this->downloadMadelineproto();
             }
         } else {
-            $madelinephar = $this->settings['madelinephar'];
+            $madelinephar = DIR . $this->settings['madelinephar'];
         }
-        if (!file_exists($madelinephar)) die('File ' . $madelinephar . ' not found.');
+        if (!file_exists($madelinephar)) die('File ' . $madelinephar . ' not found.'.PHP_EOL);
         require_once $madelinephar;
         if (is_string($this->settings['proxy']) and $this->settings['proxy'] === 'auto') {
             $proxy = $this->getProxy();
@@ -112,7 +112,7 @@ class TGUserbot {
         if ($this->settings['auto_reboot']) {
             register_shutdown_function(function () {
                 if (PID === getmypid()) {
-                    pcntl_exec($_SERVER['_'], $GLOBALS['argv']);
+                    pcntl_exec(PHP_BINARY, $GLOBALS['argv']);
                 }
             });
         }
@@ -336,9 +336,9 @@ class TGUserbot {
                 unset($cjb);
             }
             if ($this->settings['always_online']) {
-                if (in_array(date('s'), [0, 30, 31])) {
+                if (in_array(date('s'), [00, 30, 31])) {
                     try {
-                        $this->account->updateStatus(['offline' => 0], ['noResponse' => true]);
+                        $MadelineProto->account->updateStatus(['offline' => 0], ['noResponse' => true]);
                     } catch (Exception $e) {
                     }
                 }

@@ -24,7 +24,7 @@ $addsession = function (CliMenu $menu) {
     $sessionName = trim(readline($strings['new_session_name']));
     if ($sessionName != '') {
         $menu->close();
-        passthru($_SERVER['_'].' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --session='.escapeshellarg($sessionName));
+        passthru(PHP_BINARY.' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --session='.escapeshellarg($sessionName));
         exit;
     } else {
         $menu->close();
@@ -37,7 +37,7 @@ $startall = function (CliMenu $menu) {
     //shell_exec('pkill -f '.escapeshellarg($_SERVER['SCRIPT_NAME']));
     foreach ($sessions as $session) {
         if (substr($session, -9) === '.madeline') {
-            shell_exec($_SERVER['_'].' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --background --session='.escapeshellarg(str_replace('.madeline', '', $session)));
+            shell_exec(PHP_BINARY.' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --background --session='.escapeshellarg(str_replace('.madeline', '', $session)));
             echo $session.' '.strtolower($strings['started']).PHP_EOL;
         }
     }
@@ -66,14 +66,14 @@ $menu->setTitle('TGUserbot account manager')
           global $sessions;
           $session = str_replace('.madeline', '', $sessions[filter_var($menu->getSelectedItem()->getText(), FILTER_SANITIZE_NUMBER_INT)]);
           $menu->close();
-          passthru($_SERVER['_'].' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --session='.escapeshellarg($session));
+          passthru(PHP_BINARY.' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --session='.escapeshellarg($session));
           exit;
       })
       ->addItem($strings['start_background'].' ['.$sessionN.']', function (CliMenu $menu) {
           global $strings;
           global $sessions;
           $session = str_replace('.madeline', '', $sessions[filter_var($menu->getSelectedItem()->getText(), FILTER_SANITIZE_NUMBER_INT)]);
-          shell_exec($_SERVER['_'].' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --background --session='.escapeshellarg($session));
+          shell_exec(PHP_BINARY.' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --background --session='.escapeshellarg($session));
           $menu->flash($strings['started'])
           ->display();
           $menu->close();
