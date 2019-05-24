@@ -69,6 +69,8 @@ Carica una sessione: `./TGUserbot.phar --session="nomesessione"`
 
 Carica una sessione in background: `./TGUserbot.phar --session="nomesessione"` --background
 
+Avvia tutte le sessioni in background: `./TGUserbot.phar startAll`
+
 🔥 Gestisci account: `./TGUserbot.phar accounts`
 
 Creare backup delle sessioni
