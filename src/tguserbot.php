@@ -1,5 +1,5 @@
 <?php
-define('TESTMODE', false);
+define('TESTMODE', true);
 define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/info.txt?cache='.uniqid());
 define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar?cache='.uniqid());
 if (!TESTMODE and Phar::running()) {
