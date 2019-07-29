@@ -5,3 +5,5 @@
 - [Canale con installer Windows](https://t.me/TGUserbotReleases)
 - [Canale MadelineProto](https://t.me/MadelineProto)
 - [Gruppi MadelineProto](https://t.me/pwrtelegramgroup)
+
+## >>[Home](https://github.com/peppelg/TGUserbot/tree/master/docs/it/README.md)<<
