@@ -1,6 +1,6 @@
 #!/bin/bash
 pkg update -y
-pkg install git screen zip php -y
+pkg install git screen zip wget curl php -y
 mkdir TGUserbot
 cd TGUserbot
 wget https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar
