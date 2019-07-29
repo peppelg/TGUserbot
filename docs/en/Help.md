@@ -1,5 +1,6 @@
 # Support
 
+- [ALL MADELINEPROTO METHODS](https://docs.madelineproto.xyz/API_docs/methods/)
 - [TGUserbot group](https://t.me/joinchat/HIyPnk3GQ7525LpP62yIWA)
 - [TGUserbot channel](https://t.me/TGUserbotChannel)
 - [Windows TGUserbot installer Channel](https://t.me/TGUserbotReleases)
