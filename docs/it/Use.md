@@ -43,6 +43,8 @@ Funzione $sm: `$sm(ChatId, Message, Reply, ParseMode);`
 
 ⚠️ Prima di chiamare un metodo (`$sm`, `$MadelineProto->...`, ecc), devi aggiungere `yield` (serve per async).
 
+😫 Se vuoi includere un file con i comandi, in `bot.php`, dopo `//COMANDI BOT` scrivi `yield eval(str_replace('<?php', '', file_get_contents('FILE CON I COMANDI DA INCLUDERE.PHP')));` (Non usare include() perchè non va con yield).
+
 ## Variabili
 	$update - update ricevuto
 	$msg - messaggio
