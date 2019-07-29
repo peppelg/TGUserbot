@@ -1,6 +1,9 @@
 <?php
 define('PHAR_NAME', 'TGUserbot.phar');
 define('SRC_DIR', 'src');
+if (trim(strtolower(readline('Run composer update? [y/n]: '))) === 'y') {
+    passthru('cd '.escapeshellarg(SRC_DIR).' && composer update');
+}
 $phar = new Phar(PHAR_NAME, 0, PHAR_NAME);
 $phar->startBuffering();
 $phar->buildFromDirectory(SRC_DIR);
@@ -17,7 +20,7 @@ $eval = trim(file_get_contents(__DIR__.'/eval'));
 echo $eval;
 unlink(__DIR__.'/eval');
 $phar->addFromString('.changelog', gzdeflate(json_encode(['changelog' => $changelog, 'eval' => $eval]), 9));
-$stub = "#!/usr/bin/env php \n".$phar->createDefaultStub('tguserbot.php');
+$stub = "#!/usr/bin/env php \n".$phar->createDefaultStub('index.php');
 $phar->setStub($stub);
 $phar->stopBuffering();
 file_put_contents('info.txt', json_encode(['md5' => md5_file(PHAR_NAME)]));

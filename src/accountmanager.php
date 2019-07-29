@@ -1,103 +1,115 @@
 <?php
-if (!Phar::running()) {
-    define('DIR', __DIR__ . '/');
-} else {
-    define('DIR', str_replace('phar://', '', pathinfo(__DIR__, PATHINFO_DIRNAME)) . '/');
-}
-if ($_SERVER['SCRIPT_NAME'] === 'accountmanager.php') {
-    $_SERVER['SCRIPT_NAME'] = 'start.php';
-}
-$settings = json_decode(file_get_contents(DIR . 'settings.json'), true);
-if (file_exists(__DIR__ . '/strings_' . $settings['language'] . '.json')) {
-    $strings = json_decode(file_get_contents(__DIR__ . '/strings_' . $settings['language'] . '.json'), true);
-} else {
-    $strings = json_decode(file_get_contents(__DIR__ . '/strings_it.json'), true);
-}
-$sessions = array_diff(scandir(DIR.'sessions'), ['.', '..']);
-use PhpSchool\CliMenu\CliMenu;
-use PhpSchool\CliMenu\CliMenuBuilder;
 
-require_once 'vendor/autoload.php';
-$menu = new CliMenuBuilder;
-$addsession = function (CliMenu $menu) {
-    global $strings;
-    $sessionName = trim(readline($strings['new_session_name']));
-    if ($sessionName != '') {
-        $menu->close();
-        passthru(PHP_BINARY.' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --session='.escapeshellarg($sessionName));
-        exit;
+use PhpSchool\CliMenu\CliMenu;
+use PhpSchool\CliMenu\Builder\CliMenuBuilder;
+use PhpSchool\CliMenu\Action\ExitAction;
+use PhpSchool\CliMenu\Action\GoBackAction;
+
+$sessions = $TGUserbot->getSessions();
+$start = function ($session, $mode = NULL) use (&$TGUserbot) {
+    if ($mode === 'background') {
+        $TGUserbot->startInBackground([$session]);
     } else {
-        $menu->close();
-        require(__FILE__);
+        $TGUserbot->start($session);
     }
 };
-$startall = function (CliMenu $menu) {
-    global $strings;
-    global $sessions;
-    //shell_exec('pkill -f '.escapeshellarg($_SERVER['SCRIPT_NAME']));
-    foreach ($sessions as $session) {
-        if (substr($session, -9) === '.madeline') {
-            shell_exec(PHP_BINARY.' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --background --session='.escapeshellarg(str_replace('.madeline', '', $session)));
-            echo $session.' '.strtolower($strings['started']).PHP_EOL;
+
+$addNew = function (CliMenu $menu) use ($TGUserbot, $start, $sessions) {
+    $result = $menu->askText()
+        ->setPromptText($TGUserbot->strings['enter_session_name'])
+        ->setValidationFailedText($TGUserbot->strings['enter_session_name'])
+        ->ask();
+    $session = $result->fetch();
+    $menu->close();
+    $start($session);
+    exit;
+};
+$startAll = function (CliMenu $menu) use ($TGUserbot, $sessions) {
+    $TGUserbot->startInBackground($sessions);
+    $flash = $menu->flash($TGUserbot->strings['done']);
+    $flash->display();
+};
+$stopAll = function (CliMenu $menu) use ($TGUserbot, $sessions) { //force stop
+    shell_exec('screen -ls | awk -vFS=\'\\t|[.]\' \'/TGUserbot/ {system("screen -S "$2" -X quit")}\'');
+    $flash = $menu->flash($TGUserbot->strings['done']);
+    $flash->display();
+};
+
+$sessionMenu = function (CliMenu $menu) use ($TGUserbot) {
+    echo $menu->getSelectedItem()->getText();
+    $flash = $menu->flash($TGUserbot->strings['done']);
+    $flash->display();
+};
+
+$menu = (new CliMenuBuilder)
+    ->setTitle('TGUserbot account manager')
+    ->disableDefaultItems()
+    ->addItem($TGUserbot->strings['add_account'], $addNew);
+if (SCREEN_SUPPORT) {
+    $menu = $menu->addItem($TGUserbot->strings['start_all'], $startAll)
+        ->addItem($TGUserbot->strings['stop_all'], $stopAll);
+}
+$menu = $menu->addLineBreak(' ');
+foreach ($sessions as $session) {
+    $menu = $menu->addSubMenu($session, function (CliMenuBuilder $b) use ($session, $TGUserbot, $start) {
+        $b->setTitle($TGUserbot->strings['sessions'] . ' > ' . $session . '.madeline')
+        ->disableDefaultItems()
+            ->addItem($TGUserbot->strings['start_session'], function (CliMenu $menu) use ($session, $TGUserbot, $start) {
+                $menu->close();
+                $start($session);
+            });
+        if (SCREEN_SUPPORT) {
+            $b = $b->addItem($TGUserbot->strings['start_session_background'], function (CliMenu $menu) use ($session, $TGUserbot, $start) {
+                $start($session, 'background');
+                $flash = $menu->flash($TGUserbot->strings['done']);
+                $flash->display();
+            })
+                ->addItem($TGUserbot->strings['stop_session'], function (CliMenu $menu) use ($session, $TGUserbot) {
+                    $TGUserbot->killSession([$session]);
+                    $flash = $menu->flash($TGUserbot->strings['done']);
+                    $flash->display();
+                });
         }
-    }
-    $menu->flash($strings['done'])
-    ->display();
-};
-$stopall = function (CliMenu $menu) {
-    global $strings;
-    global $sessions;
-    shell_exec('pkill -f '.escapeshellarg($_SERVER['SCRIPT_NAME']));
-    $menu->flash($strings['done'])
-    ->display();
-};
-$menu->setTitle('TGUserbot account manager')
-  ->addItem($strings['add_account'], $addsession)
-  ->addItem($strings['start_all'], $startall)
-  ->addItem($strings['stop_all'], $stopall)
-  ->addLineBreak(' ');
-  foreach ($sessions as $sessionN => $session) {
-      if (substr($session, -9) === '.madeline') {
-          $sname = str_replace('.madeline', '', $session);
-          $menu->addSubMenu($sname)
-      ->setTitle($strings['sessions'].' > '.$session)
-      ->addLineBreak(' ')
-      ->addItem($strings['start'].' ['.$sessionN.']', function (CliMenu $menu) {
-          global $sessions;
-          $session = str_replace('.madeline', '', $sessions[filter_var($menu->getSelectedItem()->getText(), FILTER_SANITIZE_NUMBER_INT)]);
-          $menu->close();
-          passthru(PHP_BINARY.' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --session='.escapeshellarg($session));
-          exit;
-      })
-      ->addItem($strings['start_background'].' ['.$sessionN.']', function (CliMenu $menu) {
-          global $strings;
-          global $sessions;
-          $session = str_replace('.madeline', '', $sessions[filter_var($menu->getSelectedItem()->getText(), FILTER_SANITIZE_NUMBER_INT)]);
-          shell_exec(PHP_BINARY.' '.escapeshellarg(DIR.$_SERVER['SCRIPT_NAME']).' --background --session='.escapeshellarg($session));
-          $menu->flash($strings['started'])
-          ->display();
-          $menu->close();
-          include(__FILE__);
-      })
-      ->addItem($strings['delete_session'].' ['.$sessionN.']', function (CliMenu $menu) {
-          global $strings;
-          global $sessions;
-          $session = DIR.'sessions/'.$sessions[filter_var($menu->getSelectedItem()->getText(), FILTER_SANITIZE_NUMBER_INT)];
-          @unlink($session);
-          @unlink($session.'.lock');
-          $menu->flash($strings['session_deleted'])
-          ->display();
-          $menu->close();
-          include(__FILE__);
-          exit;
-      })
-      ->addLineBreak(' ')
-      ->setGoBackButtonText($strings['go_back'])
-      ->setExitButtonText($strings['exit'])
-      ->end();
-      }
-  }
-  $menu->addLineBreak(' ')
-  ->setExitButtonText($strings['exit'])
-  ->build()
-  ->open();
+        $b = $b->addItem($TGUserbot->strings['rename_session'], function (CliMenu $menu) use ($session, $TGUserbot) {
+            $result = $menu->askText()
+                ->setPromptText($TGUserbot->strings['enter_session_name'])
+                ->setValidationFailedText($TGUserbot->strings['enter_session_name'])
+                ->ask();
+            $result = $result->fetch();
+            if ($result) {
+                $TGUserbot->killSession([$session]);
+                rename(DIR . 'sessions/' . $session . '.madeline', DIR . 'sessions/' . $result . '.madeline');
+                @unlink(DIR . 'sessions/' . $session . '.madeline.lock');
+                $flash = $menu->flash($TGUserbot->strings['done']);
+                $flash->display();
+                $menu->close();
+                require __FILE__;
+            }
+        })
+        ->addItem($TGUserbot->strings['delete_session'], function (CliMenu $menu) use ($session, $TGUserbot) {
+            $result = $menu->askText()
+                ->setPromptText($TGUserbot->strings['confirm_delete'])
+                ->setValidationFailedText($TGUserbot->strings['confirm_delete'])
+                ->ask();
+            if ($result->fetch() === $session) {
+                $TGUserbot->killSession([$session]);
+                unlink(DIR . 'sessions/' . $session . '.madeline');
+                @unlink(DIR . 'sessions/' . $session . '.madeline.lock');
+                $flash = $menu->flash($TGUserbot->strings['done']);
+                $flash->display();
+                $menu->close();
+                require __FILE__;
+            }
+        })
+        ->addLineBreak(' ')
+        ->addItem($TGUserbot->strings['go_back'], new GoBackAction);
+    });
+}
+$menu = $menu->addLineBreak(' ')
+    ->setBorder(1, 2, 'yellow')
+    ->setPadding(2, 4)
+    ->setMarginAuto()
+    ->addItem($TGUserbot->strings['exit'], new ExitAction)
+    ->build();
+$menu->open();
+//->setGoBackButtonText($TGUserbot->strings['go_back']); + togliere exit submenu
