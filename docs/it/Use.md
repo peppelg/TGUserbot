@@ -73,7 +73,7 @@ if ($msg === '/schedule') {
 ```
 
 ## MadelineCli
-Abilita `cli` nelle impostazioni.
+Abilita `madelineCli` nelle impostazioni.
 
 Scrivi nel terminale `namespace.metodo <parametri in json>`
 
