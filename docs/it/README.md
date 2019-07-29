@@ -9,5 +9,7 @@
 - [Impostazioni](https://github.com/peppelg/TGUserbot/tree/master/docs/it/Settings.md)
 - [Supporto](https://github.com/peppelg/TGUserbot/tree/master/docs/it/Help.md)
 
+[Passare da TGUserbot V4 alla nuova versione](https://t.me/TGUserbotChannel/174)
+
 
 ### >>[Funzionalità](https://github.com/peppelg/TGUserbot/tree/master/docs/it/Features.md)<<
