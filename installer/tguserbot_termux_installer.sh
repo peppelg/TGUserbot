@@ -1,4 +1,5 @@
 #!/bin/bash
+pkg update -y
 pkg install git screen zip php -y
 mkdir TGUserbot
 cd TGUserbot
