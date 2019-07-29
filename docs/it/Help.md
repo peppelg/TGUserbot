@@ -6,4 +6,6 @@
 - [Canale MadelineProto](https://t.me/MadelineProto)
 - [Gruppi MadelineProto](https://t.me/pwrtelegramgroup)
 
+Puoi contribuire traducendo `docs/` o `strings_en.json` nella tua lingua.
+
 ## >>[Home](https://github.com/peppelg/TGUserbot/tree/master/docs/it/README.md)<<
