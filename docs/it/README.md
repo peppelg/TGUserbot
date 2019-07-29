@@ -8,3 +8,6 @@
 - [Come usare TGUserbot](https://github.com/peppelg/TGUserbot/tree/master/docs/it/Use.md)
 - [Impostazioni](https://github.com/peppelg/TGUserbot/tree/master/docs/it/Settings.md)
 - [Supporto](https://github.com/peppelg/TGUserbot/tree/master/docs/it/Help.md)
+
+
+### >>[Funzionalità](https://github.com/peppelg/TGUserbot/tree/master/docs/it/Features.md)<<
