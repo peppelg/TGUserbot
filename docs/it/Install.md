@@ -3,12 +3,12 @@ Puoi installare TGUserbot automaticamente se hai Ubuntu, usi Termux, o Windows. 
 
 Ubuntu
 ------
-     curl todo | sudo bash
+     curl https://raw.githubusercontent.com/peppelg/TGUserbot/master/installer/tguserbot_ubuntu_installer.sh | sudo bash
      cd TGUserbot
      
 Termux
 ------
-    curl todo | bash
+    curl https://raw.githubusercontent.com/peppelg/TGUserbot/master/installer/tguserbot_termux_installer.sh | bash
     cd TGUserbot
 
 Windows
