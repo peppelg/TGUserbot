@@ -23,4 +23,4 @@ Poi scarica TGUserbot con `wget https://github.com/peppelg/TGUserbot/raw/master/
 
 
 
-### >>[Funzionalità](https://github.com/peppelg/TGUserbot/tree/master/docs/it/Use.md)<<
+### >>[Usare TGUserbot](https://github.com/peppelg/TGUserbot/tree/master/docs/it/Use.md)<<
