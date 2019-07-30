@@ -14,7 +14,7 @@ Termux
 
 Windows
 -------
-Download the installer from https://t.me/TGUserbotReleases
+Download the `.zip` file from https://t.me/TGUserbotReleases, extract it, start `cmd.bat` and type `php TGUserbot.phar`.
 
 Manually
 ------------
