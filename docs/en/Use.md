@@ -14,6 +14,8 @@ Stop all sessions in background: `php TGUserbot.phar --killAll`
 
 Force-stop all sessions in background: `php TGUserbot.phar --forceKillAll`
 
+View sent data: `php TGUserbot.phar data`
+
 🔥 Start account manager: `php TGUserbot.phar accounts`
 
 After having started TGUserbot, it will be asked you phone number. If you wanna login as a bot, type `bot` instead of the phone number.
@@ -37,11 +39,27 @@ if ($msg === '/comando') {
 } 
 ```
 
-$sm function: `$sm(ChatId, Message, Reply, ParseMode);`
+$sm function: `yield $sm(ChatId, Message, Reply, ParseMode);`
 
 ⚠️ Before calling a method (`$sm`, `$MadelineProto->...`, ecc), you must add `yield`.
 
-😫 If you want to include a file with a command, add after `//COMANDI BOT` in `bot.php`, `yield eval(str_replace('<?php', '', file_get_contents('FILE WITH COMMAND TO INCLUDE.PHP')));`.
+
+## Include other files
+$include function: `yield $include(FilePath, array('variableName' => $variableName));`
+
+Example: 
+
+In `bot.php` commands:
+```php
+yield $include('plugin.php', ['MadelineProto' => $MadelineProto, 'update' => $update, 'chatID' => $chatID, 'msg' => $msg, 'sm' => $sm]);
+```
+In `plugin.php`:
+```php
+if ($msg === '/plugin') {
+	yield $sm($chatID, 'A message from plugin.php');
+}
+```
+
 
 ## Variables
 	$update - received update
@@ -58,7 +76,7 @@ $sm function: `$sm(ChatId, Message, Reply, ParseMode);`
 	$me - userbot informations
 
 ## Schedule a message
-$schedule function: `$schedule(Time, Function);`. `Time` can be a timestamp or [strtotime](https://www.php.net/manual/en/function.strtotime.php). So, for example, you can also put `next hour` in Time.
+$schedule function: `yield $schedule(Time, Function);`. `Time` can be a timestamp or [strtotime](https://www.php.net/manual/en/function.strtotime.php). So, for example, you can also put `next hour` in Time.
 
 Example:
 ```php
@@ -78,6 +96,8 @@ Type on the terminal `namespace.method <json parameters>`
 Example: `messages.sendMessage {"peer": "@peppelg", "message": "Hello!"}`
 
 ![Example](https://i.imgur.com/JppLzJk.png)
+
+🆕 Now you can send a message in the last chat, just type `.r message`.
 
 
 ### >>[Settings](https://github.com/peppelg/TGUserbot/tree/master/docs/en/Settings.md)<<

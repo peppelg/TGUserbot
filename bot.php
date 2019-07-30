@@ -1,6 +1,6 @@
 <?php
 
-$bot = function ($update) use (&$MadelineProto, &$schedule, &$me, &$restart, &$sm) {
+$bot = function ($update) use (&$MadelineProto, &$schedule, &$me, &$include, &$sm) {
     foreach ($update as $varname => $var) { if ($varname !== 'update') $$varname = $var; } //NON TOCCARE - dichiara variabili $chatID $userID ecc.
 
     //COMANDI BOT

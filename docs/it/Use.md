@@ -16,7 +16,9 @@ Fermare tutte le sessioni in background: `php TGUserbot.phar --killAll`
 
 Forzare la chiusura di tutte le sessioni in background: `php TGUserbot.phar --forceKillAll`
 
-🔥 Per avviare l'account manager: `php TGUserbot.phar accounts`
+Vedere i dati inviati: `php TGUserbot.phar data`
+
+🔥 Avviare l'account manager: `php TGUserbot.phar accounts`
 
 Dopo aver avviato TGUserbot, ti verrà chiesto il numero di telefono dell'userbot. Se vuoi fare il login con un bot, al posto del numero di telefono scrivi `bot`.
 
@@ -39,11 +41,27 @@ if ($msg === '/comando') {
 } 
 ```
 
-Funzione $sm: `$sm(ChatId, Message, Reply, ParseMode);`
+Funzione $sm: `yield $sm(ChatId, Message, Reply, ParseMode);`
 
 ⚠️ Prima di chiamare un metodo (`$sm`, `$MadelineProto->...`, ecc), devi aggiungere `yield` (serve per async).
 
-😫 Se vuoi includere un file con i comandi, in `bot.php`, dopo `//COMANDI BOT` scrivi `yield eval(str_replace('<?php', '', file_get_contents('FILE CON I COMANDI DA INCLUDERE.PHP')));` (Non usare include() perchè non va con yield).
+
+## Includere altri file
+Funzione $include: `yield $include(PercorsoFile, array('nomeVariabile' => $nomeVariabile));`
+
+Esempio: 
+
+Nei comandi in `bot.php`:
+```php
+yield $include('plugin.php', ['MadelineProto' => $MadelineProto, 'update' => $update, 'chatID' => $chatID, 'msg' => $msg, 'sm' => $sm]);
+```
+In `plugin.php`:
+```php
+if ($msg === '/plugin') {
+	yield $sm($chatID, 'A message from plugin.php');
+}
+```
+
 
 ## Variabili
 	$update - update ricevuto
@@ -60,7 +78,7 @@ Funzione $sm: `$sm(ChatId, Message, Reply, ParseMode);`
 	$me - informazioni sull'utente
 
 ## Programmare l'invio di un messaggio
-Funzione $schedule: `$schedule(Time, Function);`. `Time` può essere un timestamp o [strtotime](https://www.php.net/manual/en/function.strtotime.php). Quindi, in time puoi mettere anche `next hour`, per esempio.
+Funzione $schedule: `yield $schedule(Time, Function);`. `Time` può essere un timestamp o [strtotime](https://www.php.net/manual/en/function.strtotime.php). Quindi, in time puoi mettere anche `next hour`, per esempio.
 
 Esempio:
 ```php
@@ -80,6 +98,8 @@ Scrivi nel terminale `namespace.metodo <parametri in json>`
 Esempio: `messages.sendMessage {"peer": "@peppelg", "message": "ciao"}`
 
 ![Esempio](https://i.imgur.com/JppLzJk.png)
+
+🆕 Adesso è possibile mandare velocemente messaggi nella chat più recente, basta scrivere nel terminale: `.r messaggio`.
 
 
 ### >>[Impostazioni](https://github.com/peppelg/TGUserbot/tree/master/docs/it/Settings.md)<<

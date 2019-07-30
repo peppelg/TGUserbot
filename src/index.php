@@ -73,7 +73,7 @@ if ($CliArgs->isFlagExist('forceKillAll')) {
 
 if (isset($argv[1])) {
     if ($argv[1] === 'accounts') {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        if (RUNNING_WINDOWS) {
             require __DIR__.'/simpleaccountmanager.php';
         } else {
             require __DIR__.'/accountmanager.php';
@@ -86,12 +86,4 @@ if (isset($argv[1])) {
     }
 }
 
-while (true) {
-    try {
-        $TGUserbot->start($session);
-    } catch (\Throwable $e) {
-        try {
-            $TGUserbot->log($e, [], 'error');
-        } catch (\Throwable $e) { }
-    }
-}
+$TGUserbot->start($session);
