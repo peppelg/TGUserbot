@@ -138,7 +138,7 @@ EOT;
                                 $file = new SplFileObject(__DIR__ . '/' . $conf['dir'] . '/log.txt', 'r');
                                 $file->seek(PHP_INT_MAX);
                                 $last_line = $file->key();
-                                if ($last_line < 50) $getLines = 0; else $getLines = 50;
+                                if ($last_line < 50) $getLines = $last_line; else $getLines = 50;
                                 $lines = new LimitIterator($file, $last_line - $getLines, $last_line);
                                 $result = [];
                                 foreach (iterator_to_array($lines) as $line) {
