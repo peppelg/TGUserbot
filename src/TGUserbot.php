@@ -1,11 +1,15 @@
 <?php
 if (PHP_MAJOR_VERSION < 7) die('TGUserbot requires PHP 7 or higher');
-if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') define('RUNNING_WINDOWS', true); else define('RUNNING_WINDOWS', false);
-define('TGUSERBOT_VERSION', 'cli-5.1');
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') define('RUNNING_WINDOWS', true);
+else define('RUNNING_WINDOWS', false);
+if (php_sapi_name() === 'cli') define('RUNNING_FROM', 'cli');
+else define('RUNNING_FROM', 'web');
+define('TGUSERBOT_VERSION', RUNNING_FROM . '-5.1');
 define('TESTMODE', false);
-define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/info.txt?cache='.uniqid());
-define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar?cache='.uniqid());
-if (!RUNNING_WINDOWS and shell_exec('command -v screen')) define('SCREEN_SUPPORT', true); else define('SCREEN_SUPPORT', false);
+define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/info.txt?cache=' . uniqid());
+define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar?cache=' . uniqid());
+if (!RUNNING_WINDOWS and RUNNING_FROM === 'cli' and shell_exec('command -v screen')) define('SCREEN_SUPPORT', true);
+else define('SCREEN_SUPPORT', false);
 if (!Phar::running()) {
     define('DIR', __DIR__ . '/');
 } else {
@@ -89,12 +93,17 @@ class TGUserbot
         }
         if ($type === 'error') {
             try {
-                echo "\e[1;37;41m" . $this->strings['error'] . $message . "\e[0m" . PHP_EOL;
+                if (RUNNING_FROM === 'cli') {
+                    echo "\e[1;37;41m" . $this->strings['error'] . $message . "\e[0m" . PHP_EOL;
+                } else {
+                    file_put_contents(DIR . 'log.txt', $this->strings['error'] . $message . PHP_EOL, FILE_APPEND);
+                }
             } catch (\Throwable $e) { }
             return;
         }
         $string = vsprintf($this->strings[$message], $args);
         if ($type === 'readline') {
+            if (RUNNING_FROM === 'web') return 0;
             while (true) {
                 echo $string;
                 $stdin = trim(fgets(STDIN));
@@ -104,7 +113,11 @@ class TGUserbot
             }
             return;
         }
-        echo $string . PHP_EOL;
+        if (RUNNING_FROM === 'cli') {
+            echo $string . PHP_EOL;
+        } else {
+            file_put_contents(DIR . 'log.txt', $string . PHP_EOL, FILE_APPEND);
+        }
         return;
     }
     public function sendData()
@@ -112,7 +125,8 @@ class TGUserbot
         if ($this->settings['send_data'] and function_exists('curl_version') and function_exists('json_encode')) { //https://tguserbot.peppelg.space/privacy.txt
             $data = ['settings' => $this->settings];
             unset($data['settings']['madeline']['app_info']); //remove private api_hash and api_id
-            if (RUNNING_WINDOWS) $data['uname'] = @shell_exec('ver'); else $data['uname'] = @shell_exec('uname -a');
+            if (RUNNING_WINDOWS) $data['uname'] = @shell_exec('ver');
+            else $data['uname'] = @shell_exec('uname -a');
             $data['php'] = phpversion();
             $data['tguserbot'] = TGUSERBOT_VERSION;
             $data['path'] = __FILE__;
@@ -147,19 +161,26 @@ class TGUserbot
         }
         if (!$me) {
             //LOGIN
-            $phone = $this->log('enter_phone', [], 'readline');
-            if (strtolower($phone) === 'bot') {
-                $authorization = $MadelineProto->bot_login($this->log('enter_token', [], 'readline'));
+            if (RUNNING_FROM === 'cli') {
+                $phone = $this->log('enter_phone', [], 'readline');
+                if (strtolower($phone) === 'bot') {
+                    $authorization = $MadelineProto->bot_login($this->log('enter_token', [], 'readline'));
+                } else {
+                    $MadelineProto->phone_login($phone);
+                    $authorization = $MadelineProto->complete_phone_login($this->log('enter_code', [], 'readline'));
+                    if ($authorization['_'] === 'account.password') {
+                        if (!isset($authorization['hint'])) $authorization['hint'] = '*no hint*';
+                        $authorization = $MadelineProto->complete_2fa_login($this->log('enter_2fa', [$authorization['hint']], 'readline'));
+                    }
+                    if ($authorization['_'] === 'account.needSignup') {
+                        $authorization = $MadelineProto->complete_signup($this->log('enter_account_name', [], 'readline'), '');
+                    }
+                }
             } else {
-                $MadelineProto->phone_login($phone);
-                $authorization = $MadelineProto->complete_phone_login($this->log('enter_code', [], 'readline'));
-                if ($authorization['_'] === 'account.password') {
-                    if (!isset($authorization['hint'])) $authorization['hint'] = '*no hint*';
-                    $authorization = $MadelineProto->complete_2fa_login($this->log('enter_2fa', [$authorization['hint']], 'readline'));
-                }
-                if ($authorization['_'] === 'account.needSignup') {
-                    $authorization = $MadelineProto->complete_signup($this->log('enter_account_name', [], 'readline'), '');
-                }
+                $MadelineProto->set_web_template('<form method="POST">%s<button type="submit"/>Go</button></form><p>%s</p>');
+                $MadelineProto->start();
+                $this->log('done');
+                return 'Done';
             }
             try {
                 $MadelineProto->help->acceptTermsOfService(['id' => $MadelineProto->help->getTermsOfServiceUpdate()['terms_of_service']['id']]);
@@ -167,8 +188,8 @@ class TGUserbot
             $me = $MadelineProto->get_self();
             unset($authorization);
         }
-        if ($this->settings['auto_reboot']) {
-            register_shutdown_function(function() {
+        if (RUNNING_FROM === 'cli' and $this->settings['auto_reboot']) {
+            register_shutdown_function(function () {
                 $restart = escapeshellarg(PHP_BINARY);
                 foreach ($GLOBALS['argv'] as $arg) {
                     $restart .= ' ' . escapeshellarg($arg);
@@ -187,8 +208,14 @@ class TGUserbot
             $this->settings['bot_file'] = NULL;
             $bot = NULL;
         }
-        if (!RUNNING_WINDOWS and $this->settings['madelineCli']) $MadelineProto->callFork($MadelineCli());
+        if (!RUNNING_WINDOWS and RUNNING_FROM === 'cli' and $this->settings['madelineCli']) $MadelineProto->callFork($MadelineCli());
         Amp\Loop::repeat($msInterval = 1000, $onLoop);
+        if (RUNNING_FROM === 'web') {
+            file_put_contents(DIR . 'status', 'started');
+            \danog\MadelineProto\Shutdown::addCallback(static function () {
+                file_put_contents(DIR . 'status', 'stopped');
+            });
+        }
         $this->log('ok');
         $MadelineProto->loop();
     }

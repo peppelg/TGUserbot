@@ -61,12 +61,12 @@ $parseUpdate = function ($update) use (&$MadelineProto, &$error) {
 
 $printUpdate = function ($update) use (&$data) {
     if ($update['type'] === 'group' or $update['type'] === 'supergroup') {
-        $this->log('cli_template_group', [$update['name'], $update['userID'], $update['title'], $update['chatID'], $update['msg']]);
+        $this->log(RUNNING_FROM . '_template_group', [$update['name'], $update['userID'], $update['title'], $update['chatID'], $update['msg']]);
         $data['replyChatId'] = $update['chatID'];
     } elseif ($update['type'] === 'channel') {
-        $this->log('cli_template_user', [$update['title'], $update['chatID'], $update['msg']]);
+        $this->log(RUNNING_FROM . '_template_user', [$update['title'], $update['chatID'], $update['msg']]);
     } else {
-        $this->log('cli_template_user', [$update['name'], $update['userID'], $update['msg']]);
+        $this->log(RUNNING_FROM . '_template_user', [$update['name'], $update['userID'], $update['msg']]);
         $data['replyChatId'] = $update['chatID'];
     }
 };
@@ -117,6 +117,12 @@ $onLoop = function ($watcherId) use (&$MadelineProto, &$error) {
         }
     } catch (\Throwable $e) {
         $error($e);
+    }
+    if (RUNNING_FROM === 'web') {
+        if (file_get_contents(DIR . 'status') === 'pls_stop') {
+            file_put_contents(DIR . 'status', 'stopped');
+            exit;
+        }
     }
 };
 

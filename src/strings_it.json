@@ -11,6 +11,8 @@
     "error": "Errore: ",
     "cli_template_user": "%s (%s) >>> \u001b[37;1m%s\u001b[0m",
     "cli_template_group": "%s (%s) -> %s (%s) >>> \u001b[37;1m%s\u001b[0m",
+    "web_template_user": "%s (%s) >>> %s",
+    "web_template_group": "%s (%s) -> %s (%s) >>> %s",
     "started_background": "TGUserbot è stato avviato in background usando screen. [%s]",
     "error_install_package": "Per favore installa il pacchetto %s.",
     "session_stopped": "%s fermato.",
