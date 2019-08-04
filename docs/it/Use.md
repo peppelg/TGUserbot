@@ -2,7 +2,9 @@
 
 ‼️ Per impostare la lingua italiana, apri `settings.json` (il file viene creato dopo aver avviato TGUserbot), e al posto di `"language": "en"` metti `"language": "it"`.
 
-Avviare TGUserbot: `php TGUserbot.phar`
+Se usi web hosting, segui la guida di installazione e apri dal browser il file copiato (`index.php`). Il file `bot.php` si trova dentro una cartella in `TGUserbot`. Non è possibile avere più sessioni su web hosting.
+
+Avviare TGUserbot: `php TGUserbot.phar`.
 
 Avviare una sessione diversa: `php TGUserbot.phar --session="sessione2"`
 

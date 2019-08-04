@@ -4,6 +4,20 @@ if (isset($_POST['login_password'])) {
     setcookie('password', $_POST['login_password']);
     $_COOKIE['password'] = $_POST['login_password'];
 }
+function autoUpdate($conf) {
+    $newFile = file_get_contents('https://raw.githubusercontent.com/peppelg/TGUserbot/master/web/index.php?cache='.uniqid());
+    if (file_get_contents(__FILE__) !== $newFile) {
+        file_put_contents(__FILE__, $newFile);
+    }
+    if (defined('INFO_URL') and defined('TGUSERBOTPHAR_URL')) {
+        if (json_decode(file_get_contents(INFO_URL), true)['md5'] !== md5_file(__DIR__ . '/' . $conf['dir'] . '/TGUserbot.phar')) {
+            $newFile = file_get_contents(TGUSERBOTPHAR_URL);
+            if (md5($newFile) === json_decode(file_get_contents(INFO_URL), true)['md5']) {
+                file_put_contents(__DIR__ . '/' . $conf['dir'] . '/TGUserbot.phar', $newFile);
+            }
+        }
+    }
+}
 ?>
 <!doctype html>
 <html>
@@ -139,6 +153,7 @@ EOT;
                 <button type="button" class="btn btn-primary" onclick="location.href = '?p=newSession';">New session</button>
 EOT;
                             } else {
+                                autoUpdate($conf);
                                 echo $template;
                             }
                         }

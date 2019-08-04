@@ -1,5 +1,5 @@
 # Installazione
-Puoi installare TGUserbot automaticamente se hai Ubuntu, usi Termux, o Windows. Se usi una distro diversa da Ubuntu, puoi installarlo manualmente.
+Puoi installare TGUserbot automaticamente se hai Ubuntu, usi Termux, o Windows. Se usi una distro diversa da Ubuntu, puoi installarlo manualmente. È anche possibile usare TGUserbot su un hosting web.
 
 Ubuntu
 ------
@@ -14,6 +14,13 @@ Termux
 Windows
 -------
 Scarica il file `.zip` da https://t.me/TGUserbotReleases, estrailo, avvia `cmd.bat` e scrivi `php TGUserbot.phar`.
+
+Web hosting
+------------
+1. Crea una cartella chiamata `TGUserbot`
+2. Dentro la cartella `TGUserbot` copia [index.php](https://raw.githubusercontent.com/peppelg/TGUserbot/master/web/index.php)
+3. Se usi Altervista assicurati di aver abilitato S2S
+4. Apri `index.php` dal tuo browser
 
 Manualmente
 ------------

@@ -1,5 +1,7 @@
 # Using TGUserbot
 
+If you are using a web hosting, follow the installation guide and then open in your browser the copied file (`index.php`). The `bot.php` file is inside a folder in `TGUserbot`. You can't have more than one session on a web host.
+
 Start TGUserbot: `php TGUserbot.phar`
 
 Start a different session: `php TGUserbot.phar --session="sessione2"`
