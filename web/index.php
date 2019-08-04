@@ -183,7 +183,7 @@ EOT;
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script>
-        var console_text = '';
+        var console_text = [];
 
         function start() {
             $('#start_button').attr('disabled', 1);
@@ -235,11 +235,11 @@ EOT;
             setInterval(function() {
                 $.get(window.location.href + '?p=getLog', function(data) {
                     for (index = 0; index < data.length; ++index) {
-                        if (data[index] != console_text) {
-                            console_text = data[index];
+                        if (console_text.includes(data[index]) == false) {
                             toConsole(data[index]);
                         }
                     }
+                    console_text = data;
                 });
             }, 1000);
         });
