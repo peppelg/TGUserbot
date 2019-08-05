@@ -17,6 +17,10 @@ Scarica il file `.zip` da https://t.me/TGUserbotReleases, estrailo, avvia `cmd.b
 
 Web hosting
 ------------
+<a href="https://heroku.com/deploy?template=https://github.com/peppelg/TGUserBot">
+  <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy">
+</a>
+
 1. Crea una cartella chiamata `TGUserbot`
 2. Dentro la cartella `TGUserbot` copia [index.php](https://raw.githubusercontent.com/peppelg/TGUserbot/master/web/index.php)
 3. Se usi Altervista assicurati di aver abilitato S2S
