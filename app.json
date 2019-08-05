@@ -1,10 +1,14 @@
 {
-  "name": "TGUserBot",
-  "description": "Telegram UserBot",
-  "keywords": [
-    "MadelineProto",
-    "Non ho sbatti di",
-    "farle"
-  ],
-  "repository": "https://github.com/peppelg/TGUserBot"
-} 
+    "name": "TGUserBot",
+    "description": "TGUserBot",
+    "keywords": [
+        "boh"
+    ],
+    "repository": "https://github.com/peppelg/TGUserbot",
+    "success_url": "/web",
+    "buildpacks": [
+        {
+            "url": "heroku/php"
+        }
+    ]
+}
