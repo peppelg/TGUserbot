@@ -221,7 +221,7 @@ EOT;
             setInterval(function() {
                 $.get(window.location.href + '?p=status', function(data) {
                     data = data.trim();
-                    $('#status').html('Status: <b>' + data.trim() + '</b');
+                    $('#status').html('Status: <b>' + data + '</b');
                     if (data == 'started') {
                         $('#start_button').prop('disabled', 1);
                         $('#stop_button').prop('disabled', 0);

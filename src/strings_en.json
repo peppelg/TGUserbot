@@ -2,6 +2,8 @@
     "language_error": "%s localization file does not exists.",
     "loading_madeline": "MadelineProto is loading...",
     "ok": "\u001b[42;1;37mOK\u001b[0m",
+    "ok_web": "OK",
+    "logged_as": "Logged in successfully as %s",
     "enter_phone": "Please enter your phone number: ",
     "enter_token": "Please enter a bot token: ",
     "enter_code": "Enter the code you received: ",

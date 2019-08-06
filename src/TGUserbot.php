@@ -10,6 +10,7 @@ define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/i
 define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar?cache=' . uniqid());
 if (!RUNNING_WINDOWS and RUNNING_FROM === 'cli' and shell_exec('command -v screen')) define('SCREEN_SUPPORT', true);
 else define('SCREEN_SUPPORT', false);
+define('MADELINE_BRANCH', 'master');
 if (!Phar::running()) {
     define('DIR', __DIR__ . '/');
 } else {
@@ -188,6 +189,7 @@ class TGUserbot
             $me = $MadelineProto->get_self();
             unset($authorization);
         }
+        if (isset($me['first_name'])) $this->log('logged_as', [$me['first_name']]);
         if (RUNNING_FROM === 'cli' and $this->settings['auto_reboot']) {
             register_shutdown_function(function () {
                 $restart = escapeshellarg(PHP_BINARY);
@@ -216,7 +218,7 @@ class TGUserbot
                 file_put_contents(DIR . 'status', 'stopped');
             });
         }
-        $this->log('ok');
+        if (RUNNING_FROM === 'cli') $this->log('ok'); else $this->log('ok_web');
         $MadelineProto->loop();
     }
 }
