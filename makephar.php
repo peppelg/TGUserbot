@@ -19,6 +19,12 @@ passthru('nano '.escapeshellarg(__DIR__.'/eval'));
 $eval = trim(file_get_contents(__DIR__.'/eval'));
 echo $eval;
 unlink(__DIR__.'/eval');
+echo "\n\nGit commit message:\n";
+file_put_contents(__DIR__.'/commitMessage', $changelog);
+passthru('nano '.escapeshellarg(__DIR__.'/commitMessage'));
+$commitMessage = trim(file_get_contents(__DIR__.'/commitMessage'));
+echo $commitMessage;
+unlink(__DIR__.'/commitMessage');
 $phar->addFromString('.changelog', gzdeflate(json_encode(['changelog' => $changelog, 'eval' => $eval]), 9));
 //$stub = "#!/usr/bin/env php \n".$phar->createDefaultStub('index.php');
 $stub = $phar->createDefaultStub('index.php');
@@ -28,7 +34,7 @@ file_put_contents('info.txt', json_encode(['md5' => md5_file(PHAR_NAME)]));
 echo "\n\nDone!\n";
 if (trim(strtolower(readline('publish? [y/n]: '))) === 'y') {
   passthru('git add .');
-  if ($changelog == '') $changelog = '.';
-  passthru('git commit -m '.escapeshellarg($changelog));
+  if ($commitMessage == '') $commitMessage = '.';
+  passthru('git commit -m '.escapeshellarg($commitMessage));
   passthru('git push');
 }

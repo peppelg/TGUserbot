@@ -150,75 +150,80 @@ class TGUserbot
     }
     public function start($session = 'session')
     {
-        $this->log('loading_madeline');
-        $this->sendData();
-        require_once DIR . $this->settings['madelinePhar'];
-        $MadelineProto = new \danog\MadelineProto\API(DIR . 'sessions/' . $session . '.madeline', $this->settings['madeline']);
         try {
-            $me = $MadelineProto->get_self();
+            $this->log('loading_madeline');
+            $this->sendData();
+            require_once DIR . $this->settings['madelinePhar'];
+            $MadelineProto = new \danog\MadelineProto\API(DIR . 'sessions/' . $session . '.madeline', $this->settings['madeline']);
+            try {
+                $me = $MadelineProto->get_self();
+            } catch (\Throwable $e) {
+                $me = false;
+                $this->log($e, [], 'error');
+            }
+            if (!$me) {
+                //LOGIN
+                if (RUNNING_FROM === 'cli') {
+                    $phone = $this->log('enter_phone', [], 'readline');
+                    if (strtolower($phone) === 'bot') {
+                        $authorization = $MadelineProto->bot_login($this->log('enter_token', [], 'readline'));
+                    } else {
+                        $MadelineProto->phone_login($phone);
+                        $authorization = $MadelineProto->complete_phone_login($this->log('enter_code', [], 'readline'));
+                        if ($authorization['_'] === 'account.password') {
+                            if (!isset($authorization['hint'])) $authorization['hint'] = '*no hint*';
+                            $authorization = $MadelineProto->complete_2fa_login($this->log('enter_2fa', [$authorization['hint']], 'readline'));
+                        }
+                        if ($authorization['_'] === 'account.needSignup') {
+                            $authorization = $MadelineProto->complete_signup($this->log('enter_account_name', [], 'readline'), '');
+                        }
+                    }
+                } else {
+                    $MadelineProto->set_web_template('<form method="POST">%s<button type="submit"/>Go</button></form><p>%s</p>');
+                    $MadelineProto->start();
+                    $this->log('done');
+                    return 'Done';
+                }
+                try {
+                    $MadelineProto->help->acceptTermsOfService(['id' => $MadelineProto->help->getTermsOfServiceUpdate()['terms_of_service']['id']]);
+                } catch (\Throwable $e) { }
+                $me = $MadelineProto->get_self();
+                unset($authorization);
+            }
+            if (isset($me['first_name'])) $this->log('logged_as', [$me['first_name']]);
+            if (RUNNING_FROM === 'cli' and $this->settings['auto_reboot']) {
+                register_shutdown_function(function () {
+                    $restart = escapeshellarg(PHP_BINARY);
+                    foreach ($GLOBALS['argv'] as $arg) {
+                        $restart .= ' ' . escapeshellarg($arg);
+                    }
+                    passthru($restart);
+                });
+            }
+            if ($this->settings['bot_file']) {
+                require_once DIR . $this->settings['bot_file'];
+            }
+            require __DIR__ . '/handleUpdate.php';
+            $MadelineProto->async(true);
+            $MadelineProto->setCallback($callback);
+            if ($this->settings['bot_file'] and !isset($bot) or !is_callable($bot)) {
+                $this->log('error_invalid_bot', [$this->settings['bot_file']]);
+                $this->settings['bot_file'] = NULL;
+                $bot = NULL;
+            }
+            if (!RUNNING_WINDOWS and RUNNING_FROM === 'cli' and $this->settings['madelineCli']) $MadelineProto->callFork($MadelineCli());
+            Amp\Loop::repeat($msInterval = 1000, $onLoop);
+            if (RUNNING_FROM === 'web') {
+                file_put_contents(DIR . 'status', 'started');
+                \danog\MadelineProto\Shutdown::addCallback(static function () {
+                    file_put_contents(DIR . 'status', 'stopped');
+                });
+            }
+            if (RUNNING_FROM === 'cli') $this->log('ok');
+            else $this->log('ok_web');
+            $MadelineProto->loop();
         } catch (\Throwable $e) {
-            $me = false;
             $this->log($e, [], 'error');
         }
-        if (!$me) {
-            //LOGIN
-            if (RUNNING_FROM === 'cli') {
-                $phone = $this->log('enter_phone', [], 'readline');
-                if (strtolower($phone) === 'bot') {
-                    $authorization = $MadelineProto->bot_login($this->log('enter_token', [], 'readline'));
-                } else {
-                    $MadelineProto->phone_login($phone);
-                    $authorization = $MadelineProto->complete_phone_login($this->log('enter_code', [], 'readline'));
-                    if ($authorization['_'] === 'account.password') {
-                        if (!isset($authorization['hint'])) $authorization['hint'] = '*no hint*';
-                        $authorization = $MadelineProto->complete_2fa_login($this->log('enter_2fa', [$authorization['hint']], 'readline'));
-                    }
-                    if ($authorization['_'] === 'account.needSignup') {
-                        $authorization = $MadelineProto->complete_signup($this->log('enter_account_name', [], 'readline'), '');
-                    }
-                }
-            } else {
-                $MadelineProto->set_web_template('<form method="POST">%s<button type="submit"/>Go</button></form><p>%s</p>');
-                $MadelineProto->start();
-                $this->log('done');
-                return 'Done';
-            }
-            try {
-                $MadelineProto->help->acceptTermsOfService(['id' => $MadelineProto->help->getTermsOfServiceUpdate()['terms_of_service']['id']]);
-            } catch (\Throwable $e) { }
-            $me = $MadelineProto->get_self();
-            unset($authorization);
-        }
-        if (isset($me['first_name'])) $this->log('logged_as', [$me['first_name']]);
-        if (RUNNING_FROM === 'cli' and $this->settings['auto_reboot']) {
-            register_shutdown_function(function () {
-                $restart = escapeshellarg(PHP_BINARY);
-                foreach ($GLOBALS['argv'] as $arg) {
-                    $restart .= ' ' . escapeshellarg($arg);
-                }
-                passthru($restart);
-            });
-        }
-        if ($this->settings['bot_file']) {
-            require_once DIR . $this->settings['bot_file'];
-        }
-        require __DIR__ . '/handleUpdate.php';
-        $MadelineProto->async(true);
-        $MadelineProto->setCallback($callback);
-        if ($this->settings['bot_file'] and !isset($bot) or !is_callable($bot)) {
-            $this->log('error_invalid_bot', [$this->settings['bot_file']]);
-            $this->settings['bot_file'] = NULL;
-            $bot = NULL;
-        }
-        if (!RUNNING_WINDOWS and RUNNING_FROM === 'cli' and $this->settings['madelineCli']) $MadelineProto->callFork($MadelineCli());
-        Amp\Loop::repeat($msInterval = 1000, $onLoop);
-        if (RUNNING_FROM === 'web') {
-            file_put_contents(DIR . 'status', 'started');
-            \danog\MadelineProto\Shutdown::addCallback(static function () {
-                file_put_contents(DIR . 'status', 'stopped');
-            });
-        }
-        if (RUNNING_FROM === 'cli') $this->log('ok'); else $this->log('ok_web');
-        $MadelineProto->loop();
     }
 }
