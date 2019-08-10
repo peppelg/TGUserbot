@@ -1,4 +1,5 @@
 <?php
+define('WEB_VERSION', '1.2');
 ob_start();
 if (isset($_POST['login_password'])) {
     setcookie('password', $_POST['login_password']);
@@ -82,7 +83,7 @@ EOT;
                         mkdir(__DIR__ . '/' . $install_dir);
                         file_put_contents(__DIR__ . '/' . $install_dir . '/TGUserbot.phar', $phar);
                         file_put_contents(__DIR__ . '/' . $install_dir . '/bot.php', $botphp);
-                        $conf = ['dir' => $install_dir, 'password' => $passwordhash];
+                        $conf = ['dir' => $install_dir, 'password' => $passwordhash, 'session' => uniqid(), 'v' => WEB_VERSION];
                         file_put_contents(__DIR__ . '/.conf.php', '<?php $conf = ' . var_export($conf, true) . ';');
                         echo <<<EOT
             <div class="alert alert-success" role="alert">
@@ -105,19 +106,19 @@ EOT;
             require __DIR__ . '/.conf.php';
             if (isset($conf['dir']) and isset($conf['password'])) {
                 if (isset($_COOKIE['password'])) {
-                    if (password_verify($_COOKIE['password'], $conf['password'])) {
+                    if (password_verify($_COOKIE['password'], $conf['password'])) { //LOGIN OK
                         error_reporting(0);
                         chdir(__DIR__ . '/' . $conf['dir']);
                         require __DIR__ . '/' . $conf['dir'] . '/TGUserbot.phar';
-                        if (isset($_GET['p'])) {
+                        if (isset($_GET['p'])) { //'''API'''
                             if ($_GET['p'] === 'newSession') {
-                                $r = $TGUserbot->start('session');
+                                $r = $TGUserbot->start($conf['session']);
                                 if ($r === 'Done') {
                                     echo '<script>window.location = window.location.href.split("?")[0];</script>';
                                 }
                             }
                             if ($_GET['p'] === 'start') {
-                                $TGUserbot->start('session');
+                                $TGUserbot->start($conf['session']);
                             }
                             if ($_GET['p'] === 'stop') {
                                 file_put_contents(__DIR__ . '/' . $conf['dir'] . '/status', 'pls_stop');
@@ -148,8 +149,20 @@ EOT;
                                 echo json_encode($result);
                                 exit;
                             }
-                        } else {
-                            if (!file_exists(__DIR__ . '/' . $conf['dir'] . '/sessions/session.madeline')) {
+                        } else { //Cose dopo login
+                            
+                            //Migrazione
+                            if (!isset($conf['session'])) { //v 1.1 -> 1.2
+                                $conf['session'] = uniqid();
+                                $conf['v'] = WEB_VERSION;
+                                file_put_contents(__DIR__ . '/.conf.php', '<?php $conf = ' . var_export($conf, true) . ';'); //salva new conf
+                                if (file_exists(__DIR__ . '/' . $conf['dir'] . '/sessions/session.madeline')) {
+                                    rename(__DIR__ . '/' . $conf['dir'] . '/sessions/session.madeline', __DIR__ . '/' . $conf['dir'] . '/sessions/' . $conf['session'] . '.madeline');
+                                    @unlink(__DIR__ . '/' . $conf['dir'] . '/sessions/session.madeline.lock');
+                                }
+                            }
+                            //Fine migrazione
+                            if (!file_exists(__DIR__ . '/' . $conf['dir'] . '/sessions/' . $conf['session'] . '.madeline')) {
                                 echo <<<EOT
                 <button type="button" class="btn btn-primary" onclick="location.href = '?p=newSession';">New session</button>
 EOT;
