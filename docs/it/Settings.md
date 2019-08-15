@@ -6,7 +6,7 @@ Il nome del file delle impostazioni è `settings.json`
 
 | Impostazione | Descrizione | Valore | Linux | Windows | Web |
 | ------------ | ----------- | ------ | ----- | ------- | --- |
-| language| imposta la lingua | true/false | ✅ | ✅ | | ✅
+| language | imposta la lingua | true/false | ✅ | ✅ | ✅ 
 | bot_file | imposta il file bot.php con i comandi | FILE_PATH | ✅ | ✅ | ✅ |
 | readmsg | doppia spunta per i messaggi ricevuti | true/false | ✅ | ✅ | ✅ |
 | send_errors | invia messaggi di errore in chat | true/false | ✅ | ✅ | ✅ |

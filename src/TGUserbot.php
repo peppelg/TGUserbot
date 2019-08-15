@@ -36,12 +36,16 @@ class TGUserbot
         $settings = json_decode(file_get_contents(DIR . 'settings.json'), 1);
         $settingsNew = array_merge($this->default_settings, $settings);
         $settingsNew['madeline']['app_info']['lang_code'] = $settingsNew['language'];
+        if (RUNNING_FROM === 'web' and $settingsNew['madeline']['logger'] === $this->default_settings['madeline']['logger']) {
+            $settingsNew['logger']['param'] = DIR . 'MadelineProto.log';
+        }
         if ($settings !== $settingsNew) file_put_contents(DIR . 'settings.json', json_encode($settingsNew, JSON_PRETTY_PRINT));
         return $settingsNew;
     }
     private function filesCheck()
     {
         if (!file_exists(DIR . 'sessions')) mkdir(DIR . 'sessions');
+        if (RUNNING_FROM === 'web' and !file_exists(DIR . 'sessions/index.php')) file_put_contents(DIR . 'sessions/index.php', '<?php //silencio');
         if (!file_exists(DIR . 'madeline.php') and $this->settings['madelinePhar'] === 'madeline.php') copy('https://phar.madelineproto.xyz/madeline.php', DIR . 'madeline.php');
         if (!file_exists(DIR . $this->settings['bot_file'])) $this->settings['bot_file'] = NULL;
     }
