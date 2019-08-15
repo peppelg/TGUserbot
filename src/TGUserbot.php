@@ -135,6 +135,13 @@ class TGUserbot
                 $data['sessions'] = count(glob(DIR . 'sessions/*.madeline'));
             }
             $ch = curl_init();
+            if (RUNNING_WINDOWS) {
+                if (!file_exists(DIR . 'cacert.pem')) {
+                    copy('http://curl.haxx.se/ca/cacert.pem', DIR . 'cacert.pem');
+                }
+                curl_setopt($ch, CURLOPT_CAINFO, DIR . 'cacert.pem');
+                curl_setopt($ch, CURLOPT_CAPATH, DIR . 'cacert.pem');
+            }
             curl_setopt($ch, CURLOPT_URL, 'https://tguserbot.peppelg.space/data');
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['TGUSERBOTDATA: ' . json_encode($data)]);
