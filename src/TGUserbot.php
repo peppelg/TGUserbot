@@ -34,7 +34,7 @@ class TGUserbot
     {
         if (!file_exists(DIR . 'settings.json')) file_put_contents(DIR . 'settings.json', json_encode($this->default_settings, JSON_PRETTY_PRINT));
         $settings = json_decode(file_get_contents(DIR . 'settings.json'), 1);
-        $settingsNew = array_merge($this->default_settings, $settings);
+        $settingsNew = array_replace_recursive($this->default_settings, $settings);
         $settingsNew['madeline']['app_info']['lang_code'] = $settingsNew['language'];
         if (RUNNING_FROM === 'web' and $settingsNew['madeline']['logger'] === $this->default_settings['madeline']['logger']) {
             $settingsNew['madeline']['logger']['param'] = DIR . 'MadelineProto.log';
