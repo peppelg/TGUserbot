@@ -5,7 +5,7 @@ else define('RUNNING_WINDOWS', false);
 if (php_sapi_name() === 'cli') define('RUNNING_FROM', 'cli');
 else define('RUNNING_FROM', 'web');
 define('TGUSERBOT_VERSION', RUNNING_FROM . '-5.1');
-define('TESTMODE', true);
+define('TESTMODE', false);
 define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/info.txt?cache=' . uniqid());
 define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar?cache=' . uniqid());
 if (!RUNNING_WINDOWS and RUNNING_FROM === 'cli' and shell_exec('command -v screen')) define('SCREEN_SUPPORT', true);
