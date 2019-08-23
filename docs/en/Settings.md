@@ -2,7 +2,9 @@
 
 The file of the settings will be created automatically at the first run.
 
-The settings file name is: `settings.json`
+The settings file name is: `settings.php`
+
+`$settings` is an array with TGUserbot settings
 
 | Setting | Description | Value | Linux | Windows | Web |
 | ------------ | ----------- | ------ | ----- | ------- | --- |
@@ -15,8 +17,9 @@ The settings file name is: `settings.json`
 | madelineCli | enable MadelineCli | true/false | ✅ | ❌ | ❌ |
 | send_data | send statistics data `(https://tguserbot.peppelg.space/privacy.txt)` | true/false | ✅ | ✅ | ✅ |
 | madelinePhar | set the madeline.phar file | FILE_PATH | ✅ | ✅ | ✅ |
-| madeline | all MadelineProto settings | MADELINEPROTO_SETTINGS | ✅ | ✅ | ✅ |
 
+
+`$madelineSettings` is an array with [MadelineProto settings](https://docs.madelineproto.xyz/docs/SETTINGS.html)
 
 ### >>[Help](https://github.com/peppelg/TGUserbot/tree/master/docs/en/Help.md)<<
  

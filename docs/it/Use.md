@@ -1,6 +1,6 @@
 # Usare TGUserbot
 
-‼️ Per impostare la lingua italiana, apri `settings.json` (il file viene creato dopo aver avviato TGUserbot), e al posto di `"language": "en"` metti `"language": "it"`.
+‼️ Per impostare la lingua italiana, apri `settings.php` (il file viene creato dopo aver avviato TGUserbot), e al posto di `'language' => 'en'` metti `'language' => 'it'`.
 
 Se usi web hosting, segui la guida di installazione e apri dal browser il file copiato (`index.php`). Il file `bot.php` si trova dentro una cartella in `TGUserbot`. Non è possibile avere più sessioni su web hosting.
 
@@ -84,6 +84,7 @@ Funzione $schedule: `yield $schedule(Time, Function);`. `Time` può essere un ti
 
 Esempio:
 ```php
+<?php
 if ($msg === '/schedule') {
   yield $sm($chatID, 'Message scheduled.');
   yield $schedule(time() + 10, function () use (&$MadelineProto, &$sm, $chatID) {

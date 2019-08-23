@@ -82,6 +82,7 @@ $schedule function: `yield $schedule(Time, Function);`. `Time` can be a timestam
 
 Example:
 ```php
+<?php
 if ($msg === '/schedule') {
   yield $sm($chatID, 'Message scheduled.');
   yield $schedule(time() + 10, function () use (&$MadelineProto, &$sm, $chatID) {
