@@ -5,7 +5,7 @@ else define('RUNNING_WINDOWS', false);
 if (php_sapi_name() === 'cli') define('RUNNING_FROM', 'cli');
 else define('RUNNING_FROM', 'web');
 define('TGUSERBOT_VERSION', RUNNING_FROM . '-5.1');
-define('TESTMODE', false);
+define('TESTMODE', true);
 define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/info.txt?cache=' . uniqid());
 define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar?cache=' . uniqid());
 if (!RUNNING_WINDOWS and RUNNING_FROM === 'cli' and shell_exec('command -v screen')) define('SCREEN_SUPPORT', true);
@@ -20,7 +20,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 class TGUserbot
 {
-    private $default_settings = ['language' => 'en', 'bot_file' => 'bot.php', 'readmsg' => true, 'send_errors' => true, 'always_online' => false, 'auto_reboot' => true, 'madelineCli' => true, 'send_data' => true, 'madelinePhar' => 'madeline.php', 'madeline' => ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => 'en', 'app_version' => '5.9.0', 'device_model' => 'Asus ASUS_Z00ED', 'system_version' => 'Android Nougat MR1 (25)'], 'logger' => ['logger' => 0], 'secret_chats' => ['accept_chats' => false]]];
+    private $default_settings = ['language' => 'en', 'bot_file' => 'bot.php', 'readmsg' => true, 'send_errors' => true, 'always_online' => false, 'auto_reboot' => true, 'madelineCli' => true, 'send_data' => true, 'madelinePhar' => 'madeline.php'];
+    private $default_madelineSettings = ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => 'en', 'app_version' => '5.9.0', 'device_model' => 'Asus ASUS_Z00ED', 'system_version' => 'Android Nougat MR1 (25)'], 'logger' => ['logger' => 0], 'secret_chats' => ['accept_chats' => false]];
     public $settings = NULL;
     public $strings = NULL;
 
@@ -32,14 +33,29 @@ class TGUserbot
     }
     public function getSettings()
     {
+        if (!file_exists(DIR . 'settings.php')) {
+            file_put_contents(DIR . 'settings.php', "<?php\n\n" . '$settings = ' . var_export($this->default_settings, true) . ";\n\n" . '$madelineSettings = ' . var_export($this->default_madelineSettings, true).';');
+        }
+        require DIR . 'settings.php';
+        if (!isset($settings)) {
+            $settings = $this->default_settings;
+            echo 'Your settings.php is broken. Using default settings.' . PHP_EOL;
+        }
+        if (!isset($madelineSettings)) {
+            $madelineSettings = $this->default_madelineSettings;
+        }
+        $settingsNew = array_merge($this->default_settings, $settings);
+        $settingsNew['madeline'] = $madelineSettings;
+        /* //vecchio settings.json
         if (!file_exists(DIR . 'settings.json')) file_put_contents(DIR . 'settings.json', json_encode($this->default_settings, JSON_PRETTY_PRINT));
         $settings = json_decode(file_get_contents(DIR . 'settings.json'), 1);
         $settingsNew = array_replace_recursive($this->default_settings, $settings);
+        */
         $settingsNew['madeline']['app_info']['lang_code'] = $settingsNew['language'];
         if (RUNNING_FROM === 'web' and $settingsNew['madeline']['logger'] === $this->default_settings['madeline']['logger']) {
             $settingsNew['madeline']['logger']['param'] = DIR . 'MadelineProto.log';
         }
-        if ($settings !== $settingsNew) file_put_contents(DIR . 'settings.json', json_encode($settingsNew, JSON_PRETTY_PRINT));
+        //if ($settings !== $settingsNew) file_put_contents(DIR . 'settings.json', json_encode($settingsNew, JSON_PRETTY_PRINT));
         return $settingsNew;
     }
     private function filesCheck()
