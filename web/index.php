@@ -248,7 +248,7 @@ EOT;
             setInterval(function() {
                 $.get(window.location.href + '?p=getLog', function(data) {
                     for (index = 0; index < data.length; ++index) {
-                        if (console_text.includes(data[index]) == false) {
+                        if (!console_text.includes(data[index])) {
                             toConsole(data[index]);
                         }
                     }
