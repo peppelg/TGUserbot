@@ -23,7 +23,7 @@ $parseUpdate = function ($update) use (&$MadelineProto, &$error) {
                 $result['msg'] = $update['message']['message'];
             }
             if (isset($update['message']['to_id'])) {
-                $result['info']['to'] = $MadelineProto->get_info($update['message']['to_id'], ['async' => false]);
+                $result['info']['to'] = yield $MadelineProto->getInfo($update['message']['to_id'], ['async' => false]);
             }
             if (isset($result['info']['to']['bot_api_id'])) {
                 $result['chatID'] = $result['info']['to']['bot_api_id'];
@@ -32,7 +32,7 @@ $parseUpdate = function ($update) use (&$MadelineProto, &$error) {
                 $result['type'] = $result['info']['to']['type'];
             }
             if (isset($result['userID'])) {
-                $result['info']['from'] = $MadelineProto->get_info($result['userID'], ['async' => false]);
+                $result['info']['from'] = yield $MadelineProto->getInfo($result['userID'], ['async' => false]);
             }
             if (isset($result['info']['to']['User']['self']) and isset($result['userID']) and $result['info']['to']['User']['self']) {
                 $result['chatID'] = $result['userID'];
@@ -90,14 +90,14 @@ $schedule = function ($time, $function) use (&$MadelineProto) {
 };
 
 $callback = function ($update) use (&$MadelineProto, &$error, &$parseUpdate, &$bot, &$printUpdate) {
-    $u = $parseUpdate($update);
+    $u = yield $parseUpdate($update);
     if ($u['msg']) $printUpdate($u);
     if ($this->settings['readmsg'] and isset($u['chatID']) and isset($u['msgid'])) {
         try {
             if (in_array($u['type'], ['user', 'bot', 'group'])) {
-                $MadelineProto->messages->readHistory(['peer' => $u['chatID'], 'max_id' => $u['msgid']], ['async' => true]);
+                yield $MadelineProto->messages->readHistory(['peer' => $u['chatID'], 'max_id' => $u['msgid']], ['async' => true]);
             } elseif (in_array($u['type'], ['channel', 'supergroup'])) {
-                $MadelineProto->channels->readHistory(['channel' => $u['chatID'], 'max_id' => $u['msgid']], ['async' => true]);
+                yield $MadelineProto->channels->readHistory(['channel' => $u['chatID'], 'max_id' => $u['msgid']], ['async' => true]);
             }
         } catch (\Throwable $e) { }
     }
@@ -113,7 +113,7 @@ $callback = function ($update) use (&$MadelineProto, &$error, &$parseUpdate, &$b
 $onLoop = function ($watcherId) use (&$MadelineProto, &$error) {
     try {
         if ($this->settings['always_online'] and in_array(date('s'), [00, 30])) {
-            $MadelineProto->account->updateStatus(['offline' => 0], ['async' => true]);
+            yield $MadelineProto->account->updateStatus(['offline' => 0], ['async' => true]);
         }
     } catch (\Throwable $e) {
         $error($e);

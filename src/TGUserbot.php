@@ -4,13 +4,12 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') define('RUNNING_WINDOWS', true);
 else define('RUNNING_WINDOWS', false);
 if (php_sapi_name() === 'cli') define('RUNNING_FROM', 'cli');
 else define('RUNNING_FROM', 'web');
-define('TGUSERBOT_VERSION', RUNNING_FROM . '-5.1');
+define('TGUSERBOT_VERSION', RUNNING_FROM . '-5.2');
 define('TESTMODE', false);
 define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/info.txt?cache=' . uniqid());
 define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar?cache=' . uniqid());
 if (!RUNNING_WINDOWS and RUNNING_FROM === 'cli' and shell_exec('command -v screen')) define('SCREEN_SUPPORT', true);
 else define('SCREEN_SUPPORT', false);
-define('MADELINE_BRANCH', 'master');
 if (!Phar::running()) {
     define('DIR', __DIR__ . '/');
 } else {
@@ -182,31 +181,32 @@ class TGUserbot
             $this->sendData();
             require_once DIR . $this->settings['madelinePhar'];
             $MadelineProto = new \danog\MadelineProto\API(DIR . 'sessions/' . $session . '.madeline', $this->settings['madeline']);
+            $MadelineProto->async(false);
             try {
-                $me = $MadelineProto->get_self();
-            } catch (\Throwable $e) {
-                $me = false;
-                $this->log($e, [], 'error');
+                    $me = $MadelineProto->getSelf();
+                } catch (\Throwable $e) {
+                    $me = false;
+                    $this->log($e, [], 'error');
             }
             if (!$me) {
                 //LOGIN
                 if (RUNNING_FROM === 'cli') {
                     $phone = $this->log('enter_phone', [], 'readline');
                     if (strtolower($phone) === 'bot') {
-                        $authorization = $MadelineProto->bot_login($this->log('enter_token', [], 'readline'));
+                        $authorization = $MadelineProto->botLogin($this->log('enter_token', [], 'readline'));
                     } else {
-                        $MadelineProto->phone_login($phone);
-                        $authorization = $MadelineProto->complete_phone_login($this->log('enter_code', [], 'readline'));
+                        $MadelineProto->phoneLogin($phone);
+                        $authorization = $MadelineProto->completePhoneLogin($this->log('enter_code', [], 'readline'));
                         if ($authorization['_'] === 'account.password') {
                             if (!isset($authorization['hint'])) $authorization['hint'] = '*no hint*';
-                            $authorization = $MadelineProto->complete_2fa_login($this->log('enter_2fa', [$authorization['hint']], 'readline'));
+                            $authorization = $MadelineProto->complete2faLogin($this->log('enter_2fa', [$authorization['hint']], 'readline'));
                         }
                         if ($authorization['_'] === 'account.needSignup') {
-                            $authorization = $MadelineProto->complete_signup($this->log('enter_account_name', [], 'readline'), '');
+                            $authorization = $MadelineProto->completeSignup($this->log('enter_account_name', [], 'readline'), '');
                         }
                     }
                 } else {
-                    $MadelineProto->set_web_template('<form method="POST">%s<button type="submit"/>Go</button></form><p>%s</p>');
+                    $MadelineProto->setWebTemplate('<form method="POST">%s<button type="submit"/>Go</button></form><p>%s</p>');
                     $MadelineProto->start();
                     $this->log('done');
                     return 'Done';
@@ -214,7 +214,7 @@ class TGUserbot
                 try {
                     $MadelineProto->help->acceptTermsOfService(['id' => $MadelineProto->help->getTermsOfServiceUpdate()['terms_of_service']['id']]);
                 } catch (\Throwable $e) { }
-                $me = $MadelineProto->get_self();
+                $me = $MadelineProto->getSelf();
                 unset($authorization);
             }
             if (isset($me['first_name'])) $this->log('logged_as', [$me['first_name']]);
