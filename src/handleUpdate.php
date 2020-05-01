@@ -119,7 +119,8 @@ $onLoop = function ($watcherId) use (&$MadelineProto, &$error) {
         $error($e);
     }
     if (RUNNING_FROM === 'web') {
-        if (file_get_contents(DIR . 'status') === 'pls_stop') {
+        file_put_contents(DIR . 'status', 'started');
+        if (file_get_contents(DIR . 'a_status') === 'stop') {
             file_put_contents(DIR . 'status', 'stopped');
             exit;
         }
