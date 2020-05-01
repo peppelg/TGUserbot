@@ -118,16 +118,16 @@ EOT;
                                 }
                             }
                             if ($_GET['p'] === 'start') {
+                                file_put_contents(__DIR__ . '/' . $conf['dir'] . '/a_status', 'start');
                                 $TGUserbot->start($conf['session']);
                             }
                             if ($_GET['p'] === 'stop') {
-                                file_put_contents(__DIR__ . '/' . $conf['dir'] . '/status', 'pls_stop');
+                                file_put_contents(__DIR__ . '/' . $conf['dir'] . '/a_status', 'stop');
                             }
                             if ($_GET['p'] === 'status') {
                                 ob_end_clean();
                                 if (file_exists(__DIR__ . '/' . $conf['dir'] . '/status')) {
                                     $status = file_get_contents(__DIR__ . '/' . $conf['dir'] . '/status');
-                                    if ($status === 'pls_stop') $status = 'stopped';
                                 } else {
                                     $status = 'stopped';
                                 }
