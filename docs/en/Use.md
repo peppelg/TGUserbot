@@ -20,7 +20,7 @@ View sent data: `php TGUserbot.phar data`
 
 🔥 Start account manager: `php TGUserbot.phar accounts`
 
-🔥 Start account manager (without cli-menu): `php TGUserbot.phar accounts`
+🔥 Start account manager (without cli-menu): `php TGUserbot.phar accounts2`
 
 After having started TGUserbot, it will be asked you phone number. If you wanna login as a bot, type `bot` instead of the phone number.
 

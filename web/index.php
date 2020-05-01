@@ -10,8 +10,9 @@ if (isset($_POST['login_password'])) {
     setcookie('password', $_POST['login_password']);
     $_COOKIE['password'] = $_POST['login_password'];
 }
-function autoUpdate($conf) {
-    $newFile = file_get_contents('https://raw.githubusercontent.com/peppelg/TGUserbot/master/web/index.php?cache='.uniqid());
+function autoUpdate($conf)
+{
+    $newFile = file_get_contents('https://raw.githubusercontent.com/peppelg/TGUserbot/master/web/index.php?cache=' . uniqid());
     if (file_get_contents(__FILE__) !== $newFile) {
         file_put_contents(__FILE__, $newFile);
     }
@@ -23,6 +24,10 @@ function autoUpdate($conf) {
             }
         }
     }
+}
+function saveSettings($conf)
+{
+    file_put_contents(__DIR__ . '/.conf.php', '<?php $conf = ' . var_export($conf, true) . ';');
 }
 ?>
 <!doctype html>
@@ -43,7 +48,7 @@ function autoUpdate($conf) {
     <div class="container">
         <?php
         $setup_template = <<<EOT
-    <form action="index.php" method="post">
+    <form method="post">
   <div class="form-group">
     <label for="register_password">New TGUserbot password</label>
     <input type="password" class="form-control" id="register_password" name="register_password" placeholder="Password">
@@ -52,7 +57,7 @@ function autoUpdate($conf) {
 </form>
 EOT;
         $login_template = <<<EOT
-<form action="index.php" method="post">
+<form method="post">
 <div class="form-group">
 <label for="login_password">Enter your TGUserbot password</label>
 <input type="password" class="form-control" id="login_password" name="login_password" placeholder="Password">
@@ -64,11 +69,29 @@ EOT;
     <div id="status"></div>
     <button type="button" class="btn btn-primary" onclick="start();" id="start_button">Start</button>
     <button type="button" class="btn btn-danger" onclick="stop();" id="stop_button">Stop</button>
+    <button type="button" class="btn btn-secondary" onclick="location.href = '?p=other';" id="other_button">Other</button>
     <br><br>
     <div id="consoleContainer" style='background-color:#000;border-radius:3px;resize:none;padding:20px;height:400px;width:100%;color:#000;font-family:-apple-system,BlinkMacSystemFont,"SegoeUI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"HelveticaNeue",sans-serif;line-height:18px;'>
     <div id="console" style='width:100%;height:100%;background-color:inherit;overflow-y:scroll;overflow-x:hidden;word-wrap:break-word;'></div>
     </div>
   </div>
+EOT;
+        $other_template = <<<EOT
+<div class="jumbotron">
+<button type="button" class="btn btn-primary" onclick='window.location = window.location.href.split("?")[0];'>Go back</button>
+</div>
+<div class="jumbotron">
+<h4>Change password</h4>
+<form action="?p=changePassword" method="post">
+<div class="form-group">
+<input type="password" class="form-control" id="old_password" name="old_password" placeholder="Old TGUserbot password">
+</div>
+<div class="form-group">
+<input type="password" class="form-control" id="new_password" name="new_password" placeholder="New TGUserbot password">
+</div>
+<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+</div>
 EOT;
 
         if (!file_exists(__DIR__ . '/.conf.php')) { //SETUP
@@ -89,7 +112,7 @@ EOT;
                         file_put_contents(__DIR__ . '/' . $install_dir . '/TGUserbot.phar', $phar);
                         file_put_contents(__DIR__ . '/' . $install_dir . '/bot.php', $botphp);
                         $conf = ['dir' => $install_dir, 'password' => $passwordhash, 'session' => uniqid(), 'v' => WEB_VERSION];
-                        file_put_contents(__DIR__ . '/.conf.php', '<?php $conf = ' . var_export($conf, true) . ';');
+                        saveSettings($conf);
                         echo <<<EOT
             <div class="alert alert-success" role="alert">
             Successfully installed TGUserbot.
@@ -122,12 +145,35 @@ EOT;
                                     echo '<script>window.location = window.location.href.split("?")[0];</script>';
                                 }
                             }
+                            if ($_GET['p'] === 'other') {
+                                echo $other_template;
+                            }
+                            if ($_GET['p'] === 'changePassword') {
+                                if (isset($_POST['new_password']) and isset($_POST['old_password']) and $_POST['new_password'] and password_verify($_POST['old_password'], $conf['password'])) {
+                                    $conf['password'] = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
+                                    saveSettings($conf);
+                                    echo <<<EOT
+                                    <div class="alert alert-success" role="alert">
+                                    Your password has been changed.
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick='window.location = window.location.href.split("?")[0];'>Refresh</button>
+EOT;
+                                } else {
+                                    echo <<<EOT
+                                    <div class="alert alert-danger" role="alert">
+                                    Invalid password.
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="location.href = '?p=other';">Go back</button>
+EOT;
+                                }
+                            }
                             if ($_GET['p'] === 'start') {
                                 file_put_contents(__DIR__ . '/' . $conf['dir'] . '/a_status', 'start');
                                 $TGUserbot->start($conf['session']);
                             }
                             if ($_GET['p'] === 'stop') {
                                 file_put_contents(__DIR__ . '/' . $conf['dir'] . '/a_status', 'stop');
+                                file_put_contents(__DIR__ . '/' . $conf['dir'] . '/status', 'stopped');
                             }
                             if ($_GET['p'] === 'status') {
                                 ob_end_clean();
@@ -144,7 +190,8 @@ EOT;
                                 $file = new SplFileObject(__DIR__ . '/' . $conf['dir'] . '/log.txt', 'r');
                                 $file->seek(PHP_INT_MAX);
                                 $last_line = $file->key();
-                                if ($last_line < 50) $getLines = $last_line; else $getLines = 50;
+                                if ($last_line < 50) $getLines = $last_line;
+                                else $getLines = 50;
                                 $lines = new LimitIterator($file, $last_line - $getLines, $last_line);
                                 $result = [];
                                 foreach (iterator_to_array($lines) as $line) {
@@ -155,12 +202,12 @@ EOT;
                                 exit;
                             }
                         } else { //Cose dopo login
-                            
+
                             //Migrazione
                             if (!isset($conf['session'])) { //v 1.1 -> 1.2
                                 $conf['session'] = uniqid();
                                 $conf['v'] = WEB_VERSION;
-                                file_put_contents(__DIR__ . '/.conf.php', '<?php $conf = ' . var_export($conf, true) . ';'); //salva new conf
+                                saveSettings($conf); //salva new conf
                                 if (file_exists(__DIR__ . '/' . $conf['dir'] . '/sessions/session.madeline')) {
                                     rename(__DIR__ . '/' . $conf['dir'] . '/sessions/session.madeline', __DIR__ . '/' . $conf['dir'] . '/sessions/' . $conf['session'] . '.madeline');
                                     @unlink(__DIR__ . '/' . $conf['dir'] . '/sessions/session.madeline.lock');
@@ -236,30 +283,32 @@ EOT;
             consoleElem.scrollTop(consoleElem[0].scrollHeight - consoleElem.height());
         }
         $(document).ready(function() {
-            setInterval(function() {
-                $.get(window.location.href + '?p=status', function(data) {
-                    data = data.trim();
-                    $('#status').html('Status: <b>' + data + '</b');
-                    if (data == 'started') {
-                        $('#start_button').prop('disabled', 1);
-                        $('#stop_button').prop('disabled', 0);
-                    }
-                    if (data == 'stopped') {
-                        $('#start_button').prop('disabled', 0);
-                        $('#stop_button').prop('disabled', 1);
-                    }
-                });
-            }, 1500);
-            setInterval(function() {
-                $.get(window.location.href + '?p=getLog', function(data) {
-                    for (index = 0; index < data.length; ++index) {
-                        if (console_text.includes(data[index]) == false) {
-                            toConsole(data[index]);
+            if ($('#status').length) {
+                setInterval(function() {
+                    $.get(window.location.href + '?p=status', function(data) {
+                        data = data.trim();
+                        $('#status').html('Status: <b>' + data + '</b');
+                        if (data == 'started') {
+                            $('#start_button').prop('disabled', 1);
+                            $('#stop_button').prop('disabled', 0);
                         }
-                    }
-                    console_text = data;
-                });
-            }, 1000);
+                        if (data == 'stopped') {
+                            $('#start_button').prop('disabled', 0);
+                            $('#stop_button').prop('disabled', 1);
+                        }
+                    });
+                }, 1500);
+                setInterval(function() {
+                    $.get(window.location.href + '?p=getLog', function(data) {
+                        for (index = 0; index < data.length; ++index) {
+                            if (console_text.includes(data[index]) == false) {
+                                toConsole(data[index]);
+                            }
+                        }
+                        console_text = data;
+                    });
+                }, 1000);
+            }
         });
     </script>
 </body>
