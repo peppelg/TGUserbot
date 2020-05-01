@@ -1,5 +1,5 @@
 <?php
-define('WEB_VERSION', '1.2');
+define('WEB_VERSION', '1.3');
 ob_start();
 if (isset($_POST['login_password'])) {
     setcookie('password', $_POST['login_password']);

@@ -1,6 +1,6 @@
 {
     "require": {
-        "php-school/cli-menu": "^3.2",
+        "php-school/cli-menu": "^4.0",
         "cheprasov/php-cli-args": "^3.0"
     }
 }

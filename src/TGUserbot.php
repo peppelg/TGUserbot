@@ -4,7 +4,7 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') define('RUNNING_WINDOWS', true);
 else define('RUNNING_WINDOWS', false);
 if (php_sapi_name() === 'cli') define('RUNNING_FROM', 'cli');
 else define('RUNNING_FROM', 'web');
-define('TGUSERBOT_VERSION', RUNNING_FROM . '-5.2');
+define('TGUSERBOT_VERSION', RUNNING_FROM . '-5.3');
 define('TESTMODE', false);
 define('INFO_URL', 'https://raw.githubusercontent.com/peppelg/TGUserbot/master/info.txt?cache=' . uniqid());
 define('TGUSERBOTPHAR_URL', 'https://github.com/peppelg/TGUserbot/raw/master/TGUserbot.phar?cache=' . uniqid());
@@ -20,7 +20,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 class TGUserbot
 {
     private $default_settings = ['language' => 'en', 'bot_file' => 'bot.php', 'readmsg' => true, 'send_errors' => true, 'always_online' => false, 'auto_reboot' => true, 'madelineCli' => true, 'send_data' => true, 'madelinePhar' => 'madeline.php'];
-    private $default_madelineSettings = ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => 'en', 'app_version' => '5.9.0', 'device_model' => 'Asus ASUS_Z00ED', 'system_version' => 'Android Nougat MR1 (25)'], 'logger' => ['logger' => 0], 'secret_chats' => ['accept_chats' => false]];
+    private $default_madelineSettings = ['app_info' => ['api_id' => 6, 'api_hash' => 'eb06d4abfb49dc3eeb1aeb98ae0f581e', 'lang_code' => 'en'], 'logger' => ['logger' => 0], 'secret_chats' => ['accept_chats' => false]];
     public $settings = NULL;
     public $strings = NULL;
 

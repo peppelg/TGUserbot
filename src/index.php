@@ -74,11 +74,11 @@ if (RUNNING_FROM === 'cli') {
 
     if (isset($argv[1])) {
         if ($argv[1] === 'accounts') {
-            if (RUNNING_WINDOWS) {
-                require __DIR__ . '/simpleaccountmanager.php';
-            } else {
-                require __DIR__ . '/accountmanager.php';
-            }
+            require __DIR__ . '/accountmanager.php';
+            exit;
+        }
+        if ($argv[1] == 'accounts2') {
+            require __DIR__ . '/simpleaccountmanager.php';
             exit;
         }
         if ($argv[1] === 'data') {
