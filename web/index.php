@@ -1,6 +1,11 @@
 <?php
 define('WEB_VERSION', '1.2');
 ob_start();
+if (isset($_GET['ping'])) {
+    header('Content-Type: application/json');
+    echo json_encode(array('TGUserbot_web' => WEB_VERSION));
+    exit;
+}
 if (isset($_POST['login_password'])) {
     setcookie('password', $_POST['login_password']);
     $_COOKIE['password'] = $_POST['login_password'];

@@ -20,6 +20,8 @@ View sent data: `php TGUserbot.phar data`
 
 🔥 Start account manager: `php TGUserbot.phar accounts`
 
+🔥 Start account manager (without cli-menu): `php TGUserbot.phar accounts`
+
 After having started TGUserbot, it will be asked you phone number. If you wanna login as a bot, type `bot` instead of the phone number.
 
 You can manage sessions in background with: `screen -r`, `screen -r <nome sessione`

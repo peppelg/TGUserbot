@@ -22,6 +22,8 @@ Vedere i dati inviati: `php TGUserbot.phar data`
 
 🔥 Avviare l'account manager: `php TGUserbot.phar accounts`
 
+🔥 Avviare l'account manager (senza cli-menu): `php TGUserbot.phar accounts2`
+
 Dopo aver avviato TGUserbot, ti verrà chiesto il numero di telefono dell'userbot. Se vuoi fare il login con un bot, al posto del numero di telefono scrivi `bot`.
 
 Puoi gestire le sessioni in background con `screen -r`, `screen -r <nome sessione`
