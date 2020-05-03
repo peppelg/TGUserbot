@@ -23,7 +23,7 @@ $parseUpdate = function ($update) use (&$MadelineProto, &$error) {
                 $result['msg'] = $update['message']['message'];
             }
             if (isset($update['message']['to_id'])) {
-                $result['info']['to'] = yield $MadelineProto->getInfo($update['message']['to_id'], ['async' => false]);
+                $result['info']['to'] = yield $MadelineProto->getInfo($update['message']['to_id'], ['async' => true]);
             }
             if (isset($result['info']['to']['bot_api_id'])) {
                 $result['chatID'] = $result['info']['to']['bot_api_id'];
@@ -32,7 +32,7 @@ $parseUpdate = function ($update) use (&$MadelineProto, &$error) {
                 $result['type'] = $result['info']['to']['type'];
             }
             if (isset($result['userID'])) {
-                $result['info']['from'] = yield $MadelineProto->getInfo($result['userID'], ['async' => false]);
+                $result['info']['from'] = yield $MadelineProto->getInfo($result['userID'], ['async' => true]);
             }
             if (isset($result['info']['to']['User']['self']) and isset($result['userID']) and $result['info']['to']['User']['self']) {
                 $result['chatID'] = $result['userID'];
