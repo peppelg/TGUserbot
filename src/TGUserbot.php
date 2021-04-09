@@ -1,4 +1,5 @@
 <?php
+define('MADELINE_BRANCH', '5.1.9');
 if (PHP_MAJOR_VERSION < 7) die('TGUserbot requires PHP 7 or higher');
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') define('RUNNING_WINDOWS', true);
 else define('RUNNING_WINDOWS', false);
