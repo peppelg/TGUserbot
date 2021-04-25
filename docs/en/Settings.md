@@ -16,7 +16,6 @@ The settings file name is: `settings.php`
 | auto_reboot | if TGUserbot crashes, it will restart automatically | true/false | ✅ | ✅ | ❌ |
 | madelineCli | enable MadelineCli | true/false | ✅ | ❌ | ❌ |
 | send_data | send statistics data `(https://tguserbot.peppelg.space/privacy.txt)` | true/false | ✅ | ✅ | ✅ |
-| madelinePhar | set the madeline.phar file | FILE_PATH | ✅ | ✅ | ✅ |
 
 
 `$madelineSettings` is an array with [MadelineProto settings](https://docs.madelineproto.xyz/docs/SETTINGS.html)

@@ -16,7 +16,6 @@ Il nome del file delle impostazioni è `settings.php`.
 | auto_reboot | auto riavvia se crasha | true/false | ✅ | ✅ | ❌ |
 | madelineCli | abilita MadelineCli | true/false | ✅ | ❌ | ❌ |
 | send_data | invia dati statistici `(https://tguserbot.peppelg.space/privacy.txt)` | true/false | ✅ | ✅ | ✅ |
-| madelinePhar | imposta file da includere per MadelineProto | FILE_PATH | ✅ | ✅ | ✅ |
 
 
 `$madelineSettings` è un array con le [impostazioni di MadelineProto](https://docs.madelineproto.xyz/docs/SETTINGS.html)
