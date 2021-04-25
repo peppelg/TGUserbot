@@ -4,7 +4,7 @@ $error = function ($e, $chatID = NULL) use (&$MadelineProto) {
     $this->log($e, [], 'error');
     if (isset($chatID) and $this->settings['send_errors']) {
         try {
-            $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>' . $this->strings['error'] . '</b><code>' . $e->getMessage() . '</code>', 'parse_mode' => 'HTML'], ['async' => true]);
+            $MadelineProto->messages->sendMessage(['peer' => $chatID, 'message' => '<b>' . $this->strings['error'] . '</b><code>' . $e->getMessage() . '</code>', 'parse_mode' => 'HTML']);
         } catch (\Throwable $e) { }
     }
 };
@@ -14,7 +14,7 @@ $parseUpdate = function ($update) use (&$MadelineProto, &$error) {
     try {
         if (isset($update['message'])) {
             if (isset($update['message']['from_id'])) {
-                $result['userID'] = $update['message']['from_id'];
+                $result['userID'] = yield $MadelineProto->getId($update['message']['from_id']);
             }
             if (isset($update['message']['id'])) {
                 $result['msgid'] = $update['message']['id'];
@@ -23,7 +23,7 @@ $parseUpdate = function ($update) use (&$MadelineProto, &$error) {
                 $result['msg'] = $update['message']['message'];
             }
             if (isset($update['message']['to_id'])) {
-                $result['info']['to'] = yield $MadelineProto->getInfo($update['message']['to_id'], ['async' => true]);
+                $result['info']['to'] = yield $MadelineProto->getInfo($update['message']['to_id']);
             }
             if (isset($result['info']['to']['bot_api_id'])) {
                 $result['chatID'] = $result['info']['to']['bot_api_id'];
@@ -32,7 +32,7 @@ $parseUpdate = function ($update) use (&$MadelineProto, &$error) {
                 $result['type'] = $result['info']['to']['type'];
             }
             if (isset($result['userID'])) {
-                $result['info']['from'] = yield $MadelineProto->getInfo($result['userID'], ['async' => true]);
+                $result['info']['from'] = yield $MadelineProto->getInfo($result['userID']);
             }
             if (isset($result['info']['to']['User']['self']) and isset($result['userID']) and $result['info']['to']['User']['self']) {
                 $result['chatID'] = $result['userID'];
@@ -95,9 +95,9 @@ $callback = function ($update) use (&$MadelineProto, &$error, &$parseUpdate, &$b
     if ($this->settings['readmsg'] and isset($u['chatID']) and isset($u['msgid'])) {
         try {
             if (in_array($u['type'], ['user', 'bot', 'group'])) {
-                yield $MadelineProto->messages->readHistory(['peer' => $u['chatID'], 'max_id' => $u['msgid']], ['async' => true]);
+                yield $MadelineProto->messages->readHistory(['peer' => $u['chatID'], 'max_id' => $u['msgid']]);
             } elseif (in_array($u['type'], ['channel', 'supergroup'])) {
-                yield $MadelineProto->channels->readHistory(['channel' => $u['chatID'], 'max_id' => $u['msgid']], ['async' => true]);
+                yield $MadelineProto->channels->readHistory(['channel' => $u['chatID'], 'max_id' => $u['msgid']]);
             }
         } catch (\Throwable $e) { }
     }
@@ -113,7 +113,7 @@ $callback = function ($update) use (&$MadelineProto, &$error, &$parseUpdate, &$b
 $onLoop = function ($watcherId) use (&$MadelineProto, &$error) {
     try {
         if ($this->settings['always_online'] and in_array(date('s'), [00, 30])) {
-            yield $MadelineProto->account->updateStatus(['offline' => 0], ['async' => true]);
+            yield $MadelineProto->account->updateStatus(['offline' => 0]);
         }
     } catch (\Throwable $e) {
         $error($e);
@@ -155,13 +155,13 @@ $MadelineCli = function () use (&$MadelineProto, &$error, &$MadelineCli, &$data)
                 $method = explode('.', $command[0], 2);
                 if (isset($method[0]) and isset($method[1])) {
                     try {
-                        $response = yield $MadelineProto->{$method[0]}->{$method[1]}($r, ['async' => true]);
+                        $response = yield $MadelineProto->{$method[0]}->{$method[1]}($r);
                     } catch (\Throwable $e) {
                         $error($e);
                     }
                 } elseif (isset($method[0])) {
                     try {
-                        $response = yield $MadelineProto->{$method[0]}($r, ['async' => true]);
+                        $response = yield $MadelineProto->{$method[0]}($r);
                     } catch (\Throwable $e) {
                         $error($e);
                     }
