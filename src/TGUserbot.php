@@ -17,6 +17,7 @@ if (!Phar::running()) {
 }
 require_once __DIR__ . '/vendor/autoload.php';
 
+const MADELINE_ALLOW_COMPOSER = true;
 if (!file_exists('madeline.php')) {
     copy('https://phar.madelineproto.xyz/madeline.php', 'madeline.php');
 }
